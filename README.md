@@ -1,17 +1,5 @@
-# Academic Project Page Template
-This is an academic paper project page template.
-
-
-Example project pages built using this template are:
-- https://vision.huji.ac.il/spectral_detuning/
-- https://vision.huji.ac.il/podd/
-- https://dreamix-video-editing.github.io
-- https://vision.huji.ac.il/conffusion/
-- https://vision.huji.ac.il/3d_ads/
-- https://vision.huji.ac.il/ssrl_ad/
-- https://vision.huji.ac.il/deepsim/
-
-
+# Student Thesis Project Page Template
+This is an student thesis paper project page template.
 
 ## Start using the template
 To start using the template click on `Use this Template`.
@@ -19,7 +7,7 @@ To start using the template click on `Use this Template`.
 The template uses html for controlling the content and css for controlling the style. 
 To edit the websites contents edit the `index.html` file. It contains different HTML "building blocks", use whichever ones you need and comment out the rest.  
 
-**IMPORTANT!** Make sure to replace the `favicon.ico` under `static/images/` with one of your own, otherwise your favicon is going to be a dreambooth image of me.
+**IMPORTANT!** Make sure to replace the `favicon.ico` under `static/images/` with one of your own, otherwise your favicon is going to be a the emoji mashup from [uhahne.github.io](https://uhahne.github.io).
 
 ## Components
 - Teaser video
@@ -38,8 +26,8 @@ To edit the websites contents edit the `index.html` file. It contains different 
 - When using large video files (larger than 10MB), it's better to use youtube for hosting the video as serving the video from the website can take time.
 - Using a tracker can help you analyze the traffic and see where users came from. [statcounter](https://statcounter.com) is a free, easy to use tracker that takes under 5 minutes to set up. 
 - This project page can also be made into a github pages website.
-- Replace the favicon to one of your choosing (the default one is of the Hebrew University). 
-- Suggestions, improvements and comments are welcome, simply open an issue or contact me. You can find my contact information at [https://pages.cs.huji.ac.il/eliahu-horwitz/](https://pages.cs.huji.ac.il/eliahu-horwitz/)
+- Replace the favicon to one of your choosing.
+- Suggestions, improvements and comments are welcome, simply open an issue or contact me. The original template is from [Eliahu Horwitz](https://pages.cs.huji.ac.il/eliahu-horwitz/)
 
 ## Acknowledgments
 Parts of this project page were adopted from the [Nerfies](https://nerfies.github.io/) page.
