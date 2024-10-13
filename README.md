@@ -18,9 +18,8 @@ To edit the websites contents edit the `index.html` file. It contains different 
 - Bibtex citation
 
 ## Tips:
-- The `index.html` file contains comments instructing you what to replace, you should follow these comments.
-- The `meta` tags in the `index.html` file are used to provide metadata about your paper 
-(e.g. helping search engine index the website, showing a preview image when sharing the website, etc.)
+- The [content.js](./static/js/content.js) file contains variables that allow you to easily change the content without editing the html file.
+- The [index.html](./index.html) file contains comments instructing you what to replace, you should follow these comments. The `meta` tags in the `index.html` file are used to provide metadata about your paper (e.g. helping search engine index the website, showing a preview image when sharing the website, etc.)
 - The resolution of images and videos can usually be around 1920-2048, there rarely a need for better resolution that take longer to load. 
 - All the images and videos you use should be compressed to allow for fast loading of the website (and thus better indexing by search engines). For images, you can use [TinyPNG](https://tinypng.com), for videos you can need to find the tradeoff between size and quality.
 - When using large video files (larger than 10MB), it's better to use youtube for hosting the video as serving the video from the website can take time.
