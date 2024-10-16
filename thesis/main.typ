@@ -13,8 +13,8 @@
 
 
 #show cite: it => {
-  // Only color the number, not the brackets.
-  show regex("[a-zA-Zö\d.,.-]"): set text(fill: blue)
+  // color everthing except brackets
+  show regex("[a-zA-Zö\d.,.-]&"): set text(fill: blue)
   // or regex("[\p{L}\d+]+") when using the alpha-numerical style
   it
 }
@@ -25,8 +25,7 @@
     return it
   }
 
-  // Only color the number, not the supplement.
-  show regex("[a-zA-Z\d.,.-]"): set text(fill: blue)
+  show regex("[a-zA-Z\d.,.-]&"): set text(fill: blue)
   it
 }
 
@@ -59,12 +58,14 @@
 #strong(text([Master of Science (M.Sc)], size: 20pt, baseline: 10pt))
 
 #text([on the faculty of digital media], size: 15pt) \
-#v(15pt)
-#strong(text([Synthesized LiDAR sensor data from \ Neural Radiance Fields], size: 25pt)) \
+#v(35pt)
+#strong(text([Synthesized LiDAR sensor data from], size: 25pt, spacing: 18pt)) \
+
+#strong(text([Neural Radiance Fields], size: 25pt, spacing: 18pt)) \
 
 #v(40pt)
 
-#let title_size = 16pt
+#let title_size = 1pt
 #place(
   dy: 25pt,
       table(
@@ -85,9 +86,13 @@
 #pagebreak()
  
 = Abstract
-#set heading(numbering: "1.")
 #lorem(500)
 #pagebreak()
+= Zusammenfassung
+// #set heading(numbering: "1.")
+#lorem(500)
+#pagebreak()
+
 #outline(depth: 4, indent: 2em)
 #set page(numbering: "1")
 #counter(page).update(1)
@@ -203,21 +208,40 @@ Viser is a 3D web visualisation library employed within the Nerfstudio framework
 
 == Frontend <frontend>
 The frontend is the user interaction area where a frustum with individual color and resolution can be created and positioned to generate points clouds for distance measuring.
-#figure(image("images/implementation/frontend.png", width: 70%), caption: [Possible user actions in the frontend. Current scale factor for distance which represents how distances in the scene are scaled before or after calibration with a reference object in the scene (a). Point cloud settings for individual color or size of each point cloud (b). For synthetic Sick LiDAR sensors, the vertical and horizontal angular resolution can be set. So it does not depend on hardware characteristics (c). Ability to use a reference object within the scene to calibrate the NeRF distance (d) (illustration by author).])
+#figure(image("images/implementation/frontend.png", width: 70%), caption: [Possible user actions in the frontend. Current scale factor for distance which represents how distances in the scene are scaled before or after calibration with a reference object in the scene (a). Point cloud settings for individual color or size of each point cloud (b). For synthetic Sick LiDAR sensors, the vertical and horizontal angular resolution can be set. So it does not depend on hardware characteristics (c). Ability to use a reference object within the scene to calibrate the NeRF distance (d) (illustration by author).]) <fig:frontend>
 
+To get a point cloud within the scene or as a plot, an user has to positioned the frustum. After this, the user can choose from a preconfigured Sick LiDAR sensor or individual point cloud. Individual point clouds are flexible with the angular resolution and the quantity of rays. Frontend shows the possibility to measure two points in the scene where the frustum is used to generate the point\(s) and to calibrate the scale factor for distance measurement where is a reference object in the scene with an known size can used to calibrate the scale factor.
 
-To get a point cloud within the scene or as a plot, an user has to positioned the frustum. After this, the user can choose from a preconfigured Sick LiDAR sensor or individual point cloud. Individual point clouds are flexible with the angular resolution and the quantity of rays. #link(<frontend>)[\[frontend\]] shows the possibility to measure two points in the scene where the frustum is used to generate the point\(s) and to calibrate the scale factor for distance measurement where is a reference object in the scene with an known size can used to calibrate the scale factor (see ).
-
-#figure(image("images/implementation/second.png", width: 300pt), caption: [Frontend implementation as activity diagram. After receiving the frustum data from the frondend, the user can choose between Sick LiDAR, individual measurement and calibration. This returns the LiDAR resolution and activates the process to obtain the densities in the backend (illustration by author).])
+#figure(image("images/implementation/second.png", width: 300pt), caption: [Frontend implementation as activity diagram. After receiving the frustum data from the frontend, the user can choose between Sick LiDAR, individual measurement and calibration. This returns the LiDAR resolution and activates the process to obtain the densities in the backend (illustration by author).])
 
 == Backend <backend>
-The main part of the backend is to parse the given data from the frontend and compute the density values which are then send back to the frontend. The data from the frontend are the exact position ($x , y , z$) from the frustum and its orientation ($theta , phi.alt$) in the scene. Due the complexity of Nerfstudio it is relevant to show the process to compute the densities more detailed. \
+The main part of the backend is to parse the given data from the frontend and compute the density values which are then send back to the frontend. The data from the frontend are the exact position $(x , y , z)$ from the frustum and its orientation $(theta , phi.alt)$ in the scene. Due the complexity of Nerfstudio it is relevant to show the process to compute the densities more detailed. \
 After clicking on a button to create a point cloud
+
+== User interactions
+This section presents a comprehensive overview of the user's available interactions.
+Due to the constraints of limited resources and render time, two distinct types of point clouds have been implemented. A non-clickable point cloud is provided for visual demonstration purposes only. In contrast, the clickable point cloud allows users to click on each point, and the distance from the origin to that point is displayed. In the non-clickable method, the point cloud itself is an object in the scene. In contrast, in the clickable point cloud, each point is a single object in the scene. This approach is similarly resource-intensive and time-consuming, as the first method.
+
+=== Synthesize Sick LiDAR
+To illustrate the methodology, two LiDAR demonstrations are presented, utilizing the Sick LiDAR sensor (PicoScan 100 and MultiScan 100). While the angular resolution of this sensor is fixed, the NeRF implementation is more dynamic. The original resolution is displayed in the interface, but the user may select a differential option. This is particularly relevant for the MultiScan, which has a vertical angular resolution of 0.125 for 360°. The computation of these rays is a time-consuming process. The settings for each LiDAR demonstration are saved in a JSON file, and each demonstration is loaded dynamically in the front end. Additional demonstrations and capabilities can be incorporated in future implementations.
+
+=== Individual measuring
+this d
+
+=== Precise measuring
+With this this implementation, the user are able to use a precise measuring between two points within the scene. For this, the use can individual clickable point cloud with the same principle as other individual point clouds. After clicking on a point, the User can add this coordinate as measure Point (see @fig:frontend). After adding a second measuring point, the distance appears with the distance from this two points. Due the fact that a NeRF scene do not know any virtual physical objects, this also works though walls and objects.
+
+=== Calibration
+If the camera parameter are unknown, it is necessary to calibrate the scale factor within the scene. For this, the precise measurement includes a possibility for calibrate this. For the calibration, a object in the scene is needed where the size of this object are known. In best case, this object is predestined for measurement with colors and patters and forms which the ANN can recognize easily.
+
+#figure(image("images/implementation/known_object.png", width: 200pt), caption: [Self-made reference object with a defined size and different patters for the ANN to recognize the object within the scene (image by author).])
+
+To use this calibration, the user can use the two measure points (see measure points). Than click on: "Open Calibrate Modal" (see @fig:frontend), which opens a modal in which than the distance from the reference object (the two points) in relation to the correct size of the object can used to calibrate the scale factor. After this calibration, each measurement than a calculated with this scale factor. This can easily be undone.
 
 = Density Distance Algorithm <density-distance-algorithm>
 A LiDAR sensor emits lasers in one direction and calculates the time it takes for the light to travel to an obstacle, reflect and return to the sensor. Because the speed of light is constant, this measurement is very accurate. #text(fill: red, [Text über die Genautigkeit von einem LiDAR sensor]) \
 A NeRF Scene does not know any obstacle or coordinates. After casting a ray, it estimates the density volume along a ray based on Beer-Lambert-Law, which provides a description of the effects arising resulting from the interaction between light and matter @mayerhofer_bouguerbeerlambert_2020: 
-$ T lr((t)) = e x p lr((- integral_(t_n)^t sigma lr((r lr((s)))) d s)) $ Where $sigma lr((r lr((s))))$ is the volume density along the ray depending on the position $r lr((s))$ on ray $r lr((t)) = o + t d$. \"The Function $T lr((t))$ denotes the accumulated transmittance along the ray from $t n$ to $t$, i.e., the probability that the ray travels from $t n$ to $t$ without hitting any other particle." #cite(<mildenhall_nerf_2020>, supplement: [ p.~6 ])
+$ T(t) = exp(- integral_(t_n)^t sigma (r (s)) d s) $ Where $sigma (r(s))$ is the volume density along the ray depending on the position $r(s)$ on ray $r(t) = o + t d$. \"The Function $T(t)$ denotes the accumulated transmittance along the ray from $t n$ to $t$, i.e., the probability that the ray travels from $t n$ to $t$ without hitting any other particle." #cite(<mildenhall_nerf_2020>, supplement: [ p.~6 ])
 
 == Single ray <single-ray>
 It is important to understand the functionality of a single ray. Each ray returns a list of density values and their corresponding coordinates. Each value is computed based on the Beer-Lambert method described above. \
@@ -407,6 +431,7 @@ Gibt es Möglichkeiten, deinen Ansatz in Zukunft zu erweitern? Zum Beispiel durc
 #pagebreak()
 
 = Use of AI in this thesis <use-of-ai-in-this-thesis>
+#set text(font: "Atkinson Hyperlegible")
 
 #pagebreak()
 
