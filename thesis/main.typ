@@ -14,7 +14,7 @@
 
 #show cite: it => {
   // color everthing except brackets
-  show regex("[a-zA-Zö\d.,.-]&"): set text(fill: blue)
+  show regex("[a-zA-Zöü&\d.,.-]"): set text(fill: blue)
   // or regex("[\p{L}\d+]+") when using the alpha-numerical style
   it
 }
@@ -25,7 +25,7 @@
     return it
   }
 
-  show regex("[a-zA-Z\d.,.-]&"): set text(fill: blue)
+  show regex("[a-zA-Zöü&\d.,.-]"): set text(fill: blue)
   it
 }
 
@@ -65,7 +65,7 @@
 
 #v(40pt)
 
-#let title_size = 1pt
+#let title_size = 15pt
 #place(
   dy: 25pt,
       table(
@@ -89,7 +89,7 @@
 #lorem(500)
 #pagebreak()
 = Zusammenfassung
-// #set heading(numbering: "1.")
+#set heading(numbering: "1.")
 #lorem(500)
 #pagebreak()
 
@@ -151,14 +151,12 @@ These parameters are the exact positions and orientation of each images used for
 The image resolution, focal length, principle point, and distortion. Nerfstudio only allows one type of camera parameters. \
 In an ideal case, as in @fig:pos, all cameras are evenly spaced around a center point and all camera positions are known. This center point thus acts as the center of gravity and the origin of the coordinate system of the NeRF scene. The NeRF architecture recognizes and learns from the camera positions and can derive the distances in the scene based on these positions. \
 
-#figure(image("images/related_work/pos.png", width: 100%), caption: [Left-handed: Symmetric and known camera positions where the cendroid is in the centre of the scene. The
-result would be the same coordinate system with the same distance in NeRF as in the original system. Right-handed: Only five of the eight cameras are used. The centre of gravity moves upwards. Note: The coordinates in the right image are from the original system. In NeRF the cendroid would be (0, 0, 0) and the image positions would also be different
-(illustration by author).])<fig:pos>
+#figure(image("images/related_work/pose.png", width: 100%), caption: [Left-handed: Symmetric and known camera positions where the centroid is in the center of the scene. The result would be the same coordinate system with the same distance in NeRF as in the original system. Right-handed: Only five of the eight cameras are used. The center of Gravity moves upwards. Note: The coordinates in the right image are from the original system. In NeRF the centroid would be (0, 0, 0) and the image positions would also be different (illustration by author).])<fig:pos>
 
-For example, if the cameras are exactly one meter away from the center point, this distance is also correctly interpreted by the NeRF and used to reconstruct the geometry of the scene. In practice, however, perfect symmetry or known camera poses are rare because the original scene does not allow symmetric image creation or the technical availability is not given for image poses outside a virtual world. Without knowing the exact camera parameters, this is often determined using tools that use structure-for-motion methods such as colmap, which leads to errors in pose detection. Using exact coordinates is faster and more precise than using tools for pose estimation and a reference object within the scene for scale estimation. \
+For example, if the cameras are exactly one meter away from the center point, this distance is also correctly intherpreted by the NeRF and used to reconstruct the geometry of the scene. In practice, however, perfect symmetry or known camera poses are rare because the original scene does not allow symmetric image creation or the technical availability is not given for image poses outside a virtual world. Without knowing the exact camera parameters, this is often determined using tools that use structure-for-motion methods such as colmap, which leads to errors in pose detection. Using exact coordinates is faster and more precise than using tools for pose estimation and a reference object within the scene for scale estimation. \
 Training the model with known camera poses has the benefit that the model knows exact positions from the original scene and it reduces the possibility of making a calibration error with a reference object within the scene. Navigation and usability in the scene are also easier as the original coordinates can be used.
 
-#figure(image("images/related_work/pose2.png", width: 100%), caption: [omparison of the two NeRF scene with same original scene and images but different parameter creation. While the origin in the scene with known parameters is the same as in the original scene (a), the scale as well as the position and rotation are different in the scene where the parameters are estimated with colmap (b). The distance without using a reference object for scale calibration (c) and with (d) for the NeRF scene with pose estimation. The distance without scale calibration in the scene where the parameters are known (e). The original distance is 1 meter. Note: The scale of the frustum in b is larger than in a, the frustum is not closer to the scene camera. (illustration by author).])<fig:pos3>
+#figure(image("images/related_work/pose2.png", width: 100%), caption: [Comparison of the two NeRF scene with same original scene and images but different parameter creation. While the origin in the scene with known parameters is the same as in the original scene (a), the scale as well as the position and rotation are different in the scene where the parameters are estimated with colmap (b). The distance without using a reference object for scale calibration (c) and with (d) for the NeRF scene with pose estimation. The distance without scale calibration in the scene where the parameters are known (e). The original distance is 1 meter. Note: The scale of the frustum in b is larger than in a, the frustum is not closer to the scene camera. (illustration by author).])<fig:pos3>
 
 === Neural Network Architecture <neural-network-architecture>
 The MLP consists of nine fully connected layers: eight layers with 256 neurons each and one with 128 neurons. It uses the #emph[Rectified Linear Unit] (ReLU) as the activation function, a non-linear function that leaves positive inputs unchanged while setting negative inputs to zero.
@@ -198,7 +196,6 @@ Large amounts of 3D data, are generated, stored, and transmitted by pipelines th
 \
 The target is to set an origin in a NeRF scene representation and use this origin for distance measurement in form of a synthetic LiDAR sensor. To accomplished this, the implementation needs a frontend where the origin and resolutions can set, the scene can be visualise and a backend for parsing the data within the scene representation. For the implementation Nerfstudio is used (see @nerfstudio).
 
-
 #figure(image("images/implementation/first_shadow.png", width: 100%), caption: [Activity diagram for the implementation (illustration by author).])<act_dig1>
 
 The main process is shown in @act_dig1. After training a model, the Nerfstudio 3D visualisation (viser) with LiDAR environment can be started with the CLI command #strong[#emph[ns-view-lidar]] and standard Nerfstudio flags, which opens the frontend where a frustum can be added and positioned within the scene. After clicking on a button in the frontend, a Nerfstudio camera object is created, and a resolution will be set in the backend, which computes the given densities and sends them to the frontend.
@@ -218,6 +215,106 @@ To get a point cloud within the scene or as a plot, an user has to positioned th
 The main part of the backend is to parse the given data from the frontend and compute the density values which are then send back to the frontend. The data from the frontend are the exact position $(x , y , z)$ from the frustum and its orientation $(theta , phi.alt)$ in the scene. Due the complexity of Nerfstudio it is relevant to show the process to compute the densities more detailed. \
 After clicking on a button to create a point cloud
 
+== Scene recognition
+NeRF as an ANN learns from differences within images. These differences may be in terms of color, form or angle. For example, object with homogeneous colors in a grey scene is challenging to recognize. Similarly, areas with same colors can cause issues. The floor color in the Save-Robotic scene from Sick  could not be recognized. The floor was created as expected in a perspective view, but not in a spatial view. This problem has two origins.: \
+\
+- #strong([Homogeneity:]) If there is no difference within the scene, only the perspective can be trained. This means that NeRF can render the scene approximately correctly in any given perspective (which is exactly what the ANNs in a NeRF are for), but it cannot recognize or learn from spatiality. There is no orientation to recognize the scene. It is similar to matching features of a monochrome image. These differences can be patterns, colors, shapes, shadows/light, etc.
+
+- #strong([Reflection:]) The second problem is the reflection. Normally, reflection is an advantage in NeRF because it can be detected in the original scene and thus in NeRF. It makes NeRF more realistic. But in combination with homogeneity, it is more "irritating". Not only that there are no orientation points to recognize the scene, if the homogeneous floor also reflects, the floor is different from every perspective. 
+
+#figure(image("images/implementation/floor/floor_illustration.png", width: 70%), caption: [Expected ground rendering (A). Every pixel in the rendered scene is perspective. The spatial view depends on the environment, which is also perspective. The ground is scattered in different distances from the viewpoint. This makes it impossible to measure distances (B). In this illustration, all points are below the frustum with the origin (illustration by author).]) <fig:floor> 
+
+As mentioned is the perspective view as expected. Due the issue to recognize the correct location of the floor resp. the pixel of the floor, the distances from the pixels are not correct. As shown in @fig:floor the pixels are scattered. \
+
+Below a illustration of different floors. The left column represents an image from the scene in which point clouds from an origin with my used algorithm is created. It is visible, that the floor in the frist two example are not recognized except the shadow from the box. The points outside the shadows are mostly under the floor, which can be better seen in the second column, which is a plot for a better illustration. The multiple colors from the points a the different distances from each point. Is the color from the points from the shadow similar to the color around them, the floor are recognized. The last column is a graph. This graphs represents multiple test in each scene. For this tests, is used 160 samples with 50 rays on different positions as shown in @fig:floor_ex below.
+
+#figure(image("images/implementation/floor/graph_example.png", width: 80%), caption: [Left-Handed: Illustration for the floor test represent in the graphs below. Each scene has 50 samples with 160 rays and different position. The graphs below represents the average of each 160 rays from every sample. The origin of each sample is the same. Therefore, the distance in the middle are smaller than at the edge. A good result are illustrated in the left image. where the vertical axis represent the 160 rays an the horizontal the distance]) <fig:floor_ex>
+
+#let width = 120pt
+#let height = 100pt
+
+#let graph_width = 190pt
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+    image("images/implementation/floor/grey1.png", width: width),
+    image("images/implementation/floor/grey2.png", width: width),
+    image("images/implementation/floor/grey_graph.png", width: graph_width),
+  )
+)
+The first example has a homogenous grey floor with reflections. The left image shows some artifacts in the bottom of the image. This results due the reflections on the original scene. The point cloud are good visible on the cube and the shadow on the floor. There are more points outside the shadow which are difficult to see. This points are underneath the floor level. This is better visible on the middle image which are the plot from the same position. It is difficult to evaluate the graph on the right. The most areas below the frustum are has no values and the other parts depends on the computation of the neural network. There is no recognizable pattern. It is important to mention, that the point cloud from the left and the middle images are similar but not the same. Both point clouds has the same origin in the same scene but the results are not the same because of the use of a neural network to approximate the densities. The results of the graph use the same scene but not the same positions as the first two images. It should therefore not be compared directly.
+
+#pagebreak()
+
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+    image("images/implementation/floor/grey_no_reflection.png", width: width),
+    image("images/implementation/floor/grey_no_reflection2.png", width: width),
+    image("images/implementation/floor/grey_no_reflections_graph.png", width: graph_width),
+  )
+)
+
+The second example has also a homogenous grey floor but without reflections. There are no artifacts on the bottom, which also happens in other test scenes in which the reflections are removed. As the first example, the most points are on the cube and the shadow. As the second image shows, there also a couple of points outside this areas. We can recognize a kind of gradient under the frustum which more points as the first example. The graph also has a couple of parts without values. The high peak on is a result of the less images from the training. The images are focused on the cube, the shadow and the floor around them. Part of the samples are out of this focus. The right site of the graph still seams to be chaotic but less random as the first example with a constant average distance of point. Which is not good because the edges shout has a higher distances.
+
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+    image("images/implementation/floor/checker.png", width: width),
+    image("images/implementation/floor/checker2.png", width: width),
+    image("images/implementation/floor/checker_graph.png", width: graph_width),
+  )
+)
+
+The third example use a checkerboard pattern with different colors. The moste points are on the floor and not only on the shadow and the cube. The use of this pattern led to a significantly better result as the examples before, even if the pattern repetitive. The graphs shows in the middle an approximation to an good pattern in average. A pattern is recognizable. 
+
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+    image("images/implementation/floor/interference.png", width: width),
+    image("images/implementation/floor/interference2.png", width: width),
+    image("images/implementation/floor/interference_graph.png", width: graph_width),
+  )
+)
+
+The last virtual example is the same pattern from the test scene I used. This scene also used a checkerboard pattern but with some interferences in between. Which makes the most areas on the floor unique. The first two images are similar to the example before. On closer inspection, the example before seems to be better than this. Less outliners. The graph on the other hand shows a significantly better result than the example before. 
+
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+     image("images/implementation/floor/center3.png", width: width),
+     image("images/implementation/floor/center.png", width: width),
+   image("images/implementation/floor/center2.png", width: width),
+  )
+)
+
+An direct comparison from each floor and different angles. The difference between the grey pattern with and without reflection, and the checkerboard with and without interferences not recognizable in this illustrations. But for exact measurement, this differences are important.
+
+#align(
+   grid(
+    columns: 3,
+    column-gutter: 3mm,
+    align: bottom,
+    image("images/implementation/floor/red.png", width: width),
+    image("images/implementation/floor/red2.png", width: width),
+    image("images/implementation/floor/red2.png", width: width),
+  )
+)
+
+A 3D scene representation from a real scene with my self-made reference object and a red red carpet. Even with different pattern in the carpet, only this parts on the floor are recognized which are affected from a shadow. Which means, that this issue also affects on floors which has minimal differences like signs of use on a industrial floor.
+
+It is hart to estimate the scale of this issue due the lack of information in which kind this implementation can be used. At the time this thesis is published, realtime measurement is not possible. For measuring static scene in which a possible LiDAR sensor shout  
+
 == User interactions
 This section presents a comprehensive overview of the user's available interactions.
 Due to the constraints of limited resources and render time, two distinct types of point clouds have been implemented. A non-clickable point cloud is provided for visual demonstration purposes only. In contrast, the clickable point cloud allows users to click on each point, and the distance from the origin to that point is displayed. In the non-clickable method, the point cloud itself is an object in the scene. In contrast, in the clickable point cloud, each point is a single object in the scene. This approach is similarly resource-intensive and time-consuming, as the first method.
@@ -226,10 +323,10 @@ Due to the constraints of limited resources and render time, two distinct types 
 To illustrate the methodology, two LiDAR demonstrations are presented, utilizing the Sick LiDAR sensor (PicoScan 100 and MultiScan 100). While the angular resolution of this sensor is fixed, the NeRF implementation is more dynamic. The original resolution is displayed in the interface, but the user may select a differential option. This is particularly relevant for the MultiScan, which has a vertical angular resolution of 0.125 for 360°. The computation of these rays is a time-consuming process. The settings for each LiDAR demonstration are saved in a JSON file, and each demonstration is loaded dynamically in the front end. Additional demonstrations and capabilities can be incorporated in future implementations.
 
 === Individual measuring
-this d
+While the demonstration of LiDAR sensors has defined angular and resolutions, user can also use the individual measuring. With this method, the vertical and horizontal resolution and the count of the ray can set individual. With this function, the whole scene can be scanned from an origin as well es an single ray.
 
 === Precise measuring
-With this this implementation, the user are able to use a precise measuring between two points within the scene. For this, the use can individual clickable point cloud with the same principle as other individual point clouds. After clicking on a point, the User can add this coordinate as measure Point (see @fig:frontend). After adding a second measuring point, the distance appears with the distance from this two points. Due the fact that a NeRF scene do not know any virtual physical objects, this also works though walls and objects.
+This implementation enables users to perform precise measurements between two points within the scene. To this end, the user is able to select a clickable point cloud in accordance with the same principle as that which applies to other individual point clouds. Following the selection of a point, the user is then able to add this coordinate as a measurement point (see @fig:frontend). Once a second measuring point has been added, the distance between the two points is displayed. It should be noted that, as a NeRF scene is not aware of any virtual physical objects, this functionality also works through walls and objects.
 
 === Calibration
 If the camera parameter are unknown, it is necessary to calibrate the scale factor within the scene. For this, the precise measurement includes a possibility for calibrate this. For the calibration, a object in the scene is needed where the size of this object are known. In best case, this object is predestined for measurement with colors and patters and forms which the ANN can recognize easily.
@@ -241,7 +338,6 @@ To use this calibration, the user can use the two measure points (see measure po
 = Density Distance Algorithm <density-distance-algorithm>
 A LiDAR sensor emits lasers in one direction and calculates the time it takes for the light to travel to an obstacle, reflect and return to the sensor. Because the speed of light is constant, this measurement is very accurate. #text(fill: red, [Text über die Genautigkeit von einem LiDAR sensor]) \
 A NeRF Scene does not know any obstacle or coordinates. After casting a ray, it estimates the density volume along a ray based on Beer-Lambert-Law, which provides a description of the effects arising resulting from the interaction between light and matter @mayerhofer_bouguerbeerlambert_2020: 
-$ T(t) = exp(- integral_(t_n)^t sigma (r (s)) d s) $ Where $sigma (r(s))$ is the volume density along the ray depending on the position $r(s)$ on ray $r(t) = o + t d$. \"The Function $T(t)$ denotes the accumulated transmittance along the ray from $t n$ to $t$, i.e., the probability that the ray travels from $t n$ to $t$ without hitting any other particle." #cite(<mildenhall_nerf_2020>, supplement: [ p.~6 ])
 
 == Single ray <single-ray>
 It is important to understand the functionality of a single ray. Each ray returns a list of density values and their corresponding coordinates. Each value is computed based on the Beer-Lambert method described above. \
@@ -249,7 +345,7 @@ NeRF can estimate new perspectives by learning a continuous and differentiable f
 Due to the fact that each ray has infinite points along the ray, the sampling rate depends on time and density value. If the estimated density value along the ray does not increase, a sampling point is set on the ray after a certain interval. When the density value increases, indicating that the ray has hit an object, both the density and the sampling rate increase. After the ray passes through the object, the sampling interval becomes larger again, as there is less relevant information behind the obstacle. \
 For testing, a test scene is created with NVIDIA Omniverse. This test scene is built with a 1³ m pattern to easily estimate distances and a color pattern for the ANN to better recognize the scene. To analyze the behavior of a single ray and its density values, several single rays are simulated in this scene with an exact distance of 1m to a wall within the scene.
 
-#figure(image("images/Density_Distance_Algorithm/dda1.png", width: 100%, ), caption: [Left-handed. The test scene. Right-handed: Sampling points along a ray. The sampling rate is higher then before or after the ray hits the wall (illustration by author) #text([besseres bild rechts], fill: red).])
+#figure(image("images/Density_Distance_Algorithm/dda1.png", width: 100%, ), caption: [Sampling points along a ray. Constant sampling rate before collision with the object (a). High sampling rate due to the wall (b) and low sampling rate after the ray hits the wall (c).  For better illustration, the sample points are larger in C (illustration by author).])
 
 === Accuracy <accuracy>
 An important question is whether it is possible to simulate the distance as accurately as a LiDAR sensor. To test this, several single rays are cast at a distance of 1m to the obstacle and the density value closest to 1m are plotted. For 11 different locations with different colors where the ray hits the wall, 50 rays are cast. The total average distance of all 550 rays are 1.000014739m which is a total deviation from approximately 15μm. The average density value on this exact point are 86.447. The interesting part is the difference between the different locations:
@@ -264,17 +360,17 @@ An important question is whether it is possible to simulate the distance as accu
         [#strong[Ray]],
         [#strong[Average Distance in m]],
         [#strong[Average Density Value]],
-        [Ray 1], [0.999911142], [20.3412],
-        [Ray 2], [0.999950498], [58.9121],
-        [Ray 3], [0.999995336], [59.6347],
-        [Ray 4], [0.999994195], [#highlight(fill: rgb(122, 205, 255), "389.1807")],
-        [Ray 5], [1.000088757], [194.9974],
-        [Ray 6], [1.000124663], [#highlight(fill: rgb(255, 174, 122), "1.6392")],
-        [Ray 7], [1.000016545], [5.7899],
-        [Ray 8], [1.00001], [11.2547],
-        [Ray 9], [1.000156424], [102.6740],
-        [Ray 10], [0.999937118], [96.3068],
-        [Ray 11], [1.000124663], [1.63928],
+        [1], [0.999911142], [20.3412],
+        [2], [0.999950498], [58.9121],
+        [3], [0.999995336], [59.6347],
+        [4], [0.999994195], [#highlight(fill: rgb(122, 205, 255), "389.1807")],
+        [5], [1.000088757], [194.9974],
+        [6], [1.000124663], [#highlight(fill: rgb(255, 174, 122), "1.6392")],
+        [7], [1.000016545], [5.7899],
+        [8], [1.00001], [11.2547],
+        [9], [1.000156424], [102.6740],
+        [10], [0.999937118], [96.3068],
+        [11], [1.000124663], [1.63928],
       ),
   )) <tab:my_table>
 
@@ -344,29 +440,7 @@ Since the ray is scanned at discrete points, the integral can be approximated by
 - $Delta_(s_i)$ is the distance between point $i-1$ and $i$ \
 - $T_o = 1$ the initial transmittance \
 
-A collision is detected when transmittance $T_n$ falls below the threshold: $T_n gt.small T_(t h)$
-
-// #figure(
-//   caption: [Pseudocode of main algorithm],
-//   pseudocode-list(booktabs: true, title: [Find Collision With Transmittance])[
-//     + \""" Finds the collision point along a ray based on transmission values.
-//     + ray_densities: 3D coordinates representing points along the ray.
-//     + ray_location: density values corresponding to each point.
-//     + threshold: The threshold for the transmission probability to consider as a collision
-//     + total_density = 0.0
-//     + transmittance = 1.0
-//     + origin = ray_locations[0]
-//     + *For* location, densities
-//       + set distance = distance between origin & location
-//       + total_distance += distance 
-//       + set delta_transmittance = exp(-density \* distance)
-//       + transmittance \*= delta_transmittance
-//       + *if* transmittance < transmission_threshold
-//         + return total_distance, location, density
-//     + return None, None, None  
-//   ] 
-// )
-
+A collision is detected when transmittance $T_n$ falls below the threshold: $T_n gt.small T_(t h)$, where $T_(t h) = 10^(-200)$.
 
 #pseudocode-list()[
   + *Function* find_collision_with_transmittance(ray_locations, ray_densities, threshold):
@@ -390,6 +464,10 @@ A collision is detected when transmittance $T_n$ falls below the threshold: $T_n
   ]
 
 #pagebreak()
+
+= Results
+
+
 == Conclusion <conclusion>
 #strong[Vergleich und Bewertung:]
 
@@ -431,7 +509,6 @@ Gibt es Möglichkeiten, deinen Ansatz in Zukunft zu erweitern? Zum Beispiel durc
 #pagebreak()
 
 = Use of AI in this thesis <use-of-ai-in-this-thesis>
-#set text(font: "Atkinson Hyperlegible")
 
 #pagebreak()
 
