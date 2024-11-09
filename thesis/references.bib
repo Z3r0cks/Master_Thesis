@@ -1,3 +1,17 @@
+@misc{mcdermott_probabilistic_2024,
+	title = {A Probabilistic Formulation of {LiDAR} Mapping with Neural Radiance Fields},
+	url = {http://arxiv.org/abs/2411.01725},
+	abstract = {In this paper we reexamine the process through which a Neural Radiance Field ({NeRF}) can be trained to produce novel {LiDAR} views of a scene. Unlike image applications where camera pixels integrate light over time, {LiDAR} pulses arrive at specific times. As such, multiple {LiDAR} returns are possible for any given detector and the classification of these returns is inherently probabilistic. Applying a traditional {NeRF} training routine can result in the network learning phantom surfaces in free space between conflicting range measurements, similar to how floater aberrations may be produced by an image model. We show that by formulating loss as an integral of probability (rather than as an integral of optical density) the network can learn multiple peaks for a given ray, allowing the sampling of first, nth, or strongest returns from a single output channel. Code is available at https://github.com/mcdermatt/{PLINK}},
+	number = {{arXiv}:2411.01725},
+	publisher = {{arXiv}},
+	author = {{McDermott}, Matthew and Rife, Jason},
+	urldate = {2024-11-08},
+	date = {2024-11-03},
+	eprinttype = {arxiv},
+	eprint = {2411.01725 [cs]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Robotics, I.4.5},
+}
+
 @inproceedings{schleise_automated_2024,
 	title = {An automated Pipeline to bring {NeRFs} to the Industrial Metaverse},
 	url = {http://wscg.zcu.cz/WSCG2024/CSRN-2024/B59-2024.pdf},
@@ -7,6 +21,22 @@
 	author = {Schleise, Sabine and Hahne, Uwe and {Hochschule Furtwangen} and Lindinger, Jakob and {SICK AG}},
 	urldate = {2024-09-26},
 	date = {2024},
+}
+
+@article{li_efficient_2024,
+	title = {An efficient deep learning-based framework for image distortion correction},
+	volume = {40},
+	issn = {0178-2789, 1432-2315},
+	url = {https://link.springer.com/10.1007/s00371-024-03580-3},
+	doi = {10.1007/s00371-024-03580-3},
+	pages = {6955--6967},
+	number = {10},
+	journaltitle = {The Visual Computer},
+	shortjournal = {Vis Comput},
+	author = {Li, Sicheng and Chu, Yuhui and Zhao, Yunpeng and Zhao, Pengpeng},
+	urldate = {2024-11-07},
+	date = {2024-10},
+	langid = {english},
 }
 
 @article{arribas_indirect_2020,
@@ -23,6 +53,21 @@
 	urldate = {2024-09-27},
 	date = {2020-09},
 	langid = {english},
+}
+
+@misc{loetscher_assessing_2023,
+	title = {Assessing the Robustness of {LiDAR}, Radar and Depth Cameras Against Ill-Reflecting Surfaces in Autonomous Vehicles: An Experimental Study},
+	url = {http://arxiv.org/abs/2309.10504},
+	shorttitle = {Assessing the Robustness of {LiDAR}, Radar and Depth Cameras Against Ill-Reflecting Surfaces in Autonomous Vehicles},
+	abstract = {Range-measuring sensors play a critical role in autonomous driving systems. While {LiDAR} technology has been dominant, its vulnerability to adverse weather conditions is well-documented. This paper focuses on secondary adverse conditions and the implications of ill-reflective surfaces on range measurement sensors. We assess the influence of this condition on the three primary ranging modalities used in autonomous mobile robotics: {LiDAR}, {RADAR}, and Depth-Camera. Based on accurate experimental evaluation the papers findings reveal that under ill-reflectivity, {LiDAR} ranging performance drops significantly to 33\% of its nominal operating conditions, whereas {RADAR} and Depth-Cameras maintain up to 100\% of their nominal distance ranging capabilities. Additionally, we demonstrate on a 1:10 scaled autonomous racecar how ill-reflectivity adversely impacts downstream robotics tasks, highlighting the necessity for robust range sensing in autonomous driving.},
+	number = {{arXiv}:2309.10504},
+	publisher = {{arXiv}},
+	author = {Loetscher, Michael and Baumann, Nicolas and Ghignone, Edoardo and Ronco, Andrea and Magno, Michele},
+	urldate = {2024-11-09},
+	date = {2023-09-19},
+	eprinttype = {arxiv},
+	eprint = {2309.10504 [cs]},
+	keywords = {Computer Science - Robotics},
 }
 
 @article{lecun_deep_2015,
@@ -87,6 +132,21 @@
 	langid = {english},
 }
 
+@inproceedings{laconte_lidar_2019,
+	title = {Lidar Measurement Bias Estimation via Return Waveform Modelling in a Context of 3D Mapping},
+	url = {http://arxiv.org/abs/1810.01619},
+	doi = {10.1109/ICRA.2019.8793671},
+	abstract = {In a context of 3D mapping, it is very important to get accurate measurements from sensors. In particular, Light Detection And Ranging ({LIDAR}) measurements are typically treated as a zero-mean Gaussian distribution. We show that this assumption leads to predictable localisation drifts, especially when a bias related to measuring obstacles with high incidence angles is not taken into consideration. Moreover, we present a way to physically understand and model this bias, which generalises to multiple sensors. Using an experimental setup, we measured the bias of the Sick {LMS}151, Velodyne {HDL}-32E, and Robosense {RS}-{LiDAR}-16 as a function of depth and incidence angle, and showed that the bias can go up to 20 cm for high incidence angles. We then used our modelisations to remove the bias from the measurements, leading to more accurate maps and a reduced localisation drift.},
+	pages = {8100--8106},
+	booktitle = {2019 International Conference on Robotics and Automation ({ICRA})},
+	author = {Laconte, Johann and Deschênes, Simon-Pierre and Labussière, Mathieu and Pomerleau, François},
+	urldate = {2024-11-09},
+	date = {2019-05},
+	eprinttype = {arxiv},
+	eprint = {1810.01619 [cs]},
+	keywords = {68T40, Computer Science - Robotics},
+}
+
 @misc{barron_mip-nerf_2021,
 	title = {Mip-{NeRF}: A Multiscale Representation for Anti-Aliasing Neural Radiance Fields},
 	rights = {{arXiv}.org perpetual, non-exclusive license},
@@ -114,6 +174,21 @@
 	date = {2024-01-20},
 	eprinttype = {arxiv},
 	eprint = {2304.14811 [cs]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+}
+
+@misc{deng_nerf-loam_2023,
+	title = {{NeRF}-{LOAM}: Neural Implicit Representation for Large-Scale Incremental {LiDAR} Odometry and Mapping},
+	url = {http://arxiv.org/abs/2303.10709},
+	shorttitle = {{NeRF}-{LOAM}},
+	abstract = {Simultaneously odometry and mapping using {LiDAR} data is an important task for mobile systems to achieve full autonomy in large-scale environments. However, most existing {LiDAR}-based methods prioritize tracking quality over reconstruction quality. Although the recently developed neural radiance fields ({NeRF}) have shown promising advances in implicit reconstruction for indoor environments, the problem of simultaneous odometry and mapping for large-scale scenarios using incremental {LiDAR} data remains unexplored. To bridge this gap, in this paper, we propose a novel {NeRF}-based {LiDAR} odometry and mapping approach, {NeRF}-{LOAM}, consisting of three modules neural odometry, neural mapping, and mesh reconstruction. All these modules utilize our proposed neural signed distance function, which separates {LiDAR} points into ground and non-ground points to reduce Z-axis drift, optimizes odometry and voxel embeddings concurrently, and in the end generates dense smooth mesh maps of the environment. Moreover, this joint optimization allows our {NeRF}-{LOAM} to be pre-trained free and exhibit strong generalization abilities when applied to different environments. Extensive evaluations on three publicly available datasets demonstrate that our approach achieves state-of-the-art odometry and mapping performance, as well as a strong generalization in large-scale environments utilizing {LiDAR} data. Furthermore, we perform multiple ablation studies to validate the effectiveness of our network design. The implementation of our approach will be made available at https://github.com/{JunyuanDeng}/{NeRF}-{LOAM}.},
+	number = {{arXiv}:2303.10709},
+	publisher = {{arXiv}},
+	author = {Deng, Junyuan and Chen, Xieyuanli and Xia, Songpengcheng and Sun, Zhen and Liu, Guoqing and Yu, Wenxian and Pei, Ling},
+	urldate = {2024-11-08},
+	date = {2023-03-19},
+	eprinttype = {arxiv},
+	eprint = {2303.10709 [cs]},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
 }
 
@@ -145,6 +220,13 @@
 	note = {Publisher: {arXiv}
 Version Number: 4},
 	keywords = {Computer Vision and Pattern Recognition (cs.{CV}), {FOS}: Computer and information sciences, Graphics (cs.{GR})},
+}
+
+@online{black_nikonusa_nodate,
+	title = {nikonusa},
+	url = {https://www.nikonusa.com/learn-and-explore/c/tips-and-techniques/understanding-focal-length},
+	titleaddon = {Understanding Focal Length},
+	author = {Black, Dave and Berkenfeld, Diane and Silverman, Lindsay},
 }
 
 @online{nvidia_nvidia_nodate,
@@ -183,6 +265,25 @@ Version Number: 4},
 	urldate = {2024-09-19},
 }
 
+@article{pan_pin-slam_2024,
+	title = {{PIN}-{SLAM}: {LiDAR} {SLAM} Using a Point-Based Implicit Neural Representation for Achieving Global Map Consistency},
+	volume = {40},
+	issn = {1552-3098, 1941-0468},
+	url = {http://arxiv.org/abs/2401.09101},
+	doi = {10.1109/TRO.2024.3422055},
+	shorttitle = {{PIN}-{SLAM}},
+	abstract = {Accurate and robust localization and mapping are essential components for most autonomous robots. In this paper, we propose a {SLAM} system for building globally consistent maps, called {PIN}-{SLAM}, that is based on an elastic and compact point-based implicit neural map representation. Taking range measurements as input, our approach alternates between incremental learning of the local implicit signed distance field and the pose estimation given the current local map using a correspondence-free, point-to-implicit model registration. Our implicit map is based on sparse optimizable neural points, which are inherently elastic and deformable with the global pose adjustment when closing a loop. Loops are also detected using the neural point features. Extensive experiments validate that {PIN}-{SLAM} is robust to various environments and versatile to different range sensors such as {LiDAR} and {RGB}-D cameras. {PIN}-{SLAM} achieves pose estimation accuracy better or on par with the state-of-the-art {LiDAR} odometry or {SLAM} systems and outperforms the recent neural implicit {SLAM} approaches while maintaining a more consistent, and highly compact implicit map that can be reconstructed as accurate and complete meshes. Finally, thanks to the voxel hashing for efficient neural points indexing and the fast implicit map-based registration without closest point association, {PIN}-{SLAM} can run at the sensor frame rate on a moderate {GPU}. Codes will be available at: https://github.com/{PRBonn}/{PIN}\_SLAM.},
+	pages = {4045--4064},
+	journaltitle = {{IEEE} Transactions on Robotics},
+	shortjournal = {{IEEE} Trans. Robot.},
+	author = {Pan, Yue and Zhong, Xingguang and Wiesmann, Louis and Posewsky, Thorbjörn and Behley, Jens and Stachniss, Cyrill},
+	urldate = {2024-11-08},
+	date = {2024},
+	eprinttype = {arxiv},
+	eprint = {2401.09101 [cs]},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Robotics},
+}
+
 @article{hahne_real-time_2012,
 	title = {Real-time depth imaging},
 	rights = {Terms of German Copyright Law},
@@ -197,6 +298,23 @@ Version Number: 4},
 	langid = {english},
 	note = {Publisher: Technische Universität Berlin},
 	keywords = {004 Datenverarbeitung; Informatik, Bildfusion, Depth imaging, Image fusion, Sensor fusion, Sensorfusion, Stereo imaging, Stereo-Kamera, Tiefenbildkamera, Time-of-flight Kamera, Time-of-flight camera},
+}
+
+@inproceedings{zhong_shine-mapping_2023,
+	location = {London, United Kingdom},
+	title = {{SHINE}-Mapping: Large-Scale 3D Mapping Using Sparse Hierarchical Implicit Neural Representations},
+	rights = {https://doi.org/10.15223/policy-029},
+	isbn = {9798350323658},
+	url = {https://ieeexplore.ieee.org/document/10160907/},
+	doi = {10.1109/ICRA48891.2023.10160907},
+	shorttitle = {{SHINE}-Mapping},
+	eventtitle = {2023 {IEEE} International Conference on Robotics and Automation ({ICRA})},
+	pages = {8371--8377},
+	booktitle = {2023 {IEEE} International Conference on Robotics and Automation ({ICRA})},
+	publisher = {{IEEE}},
+	author = {Zhong, Xingguang and Pan, Yue and Behley, Jens and Stachniss, Cyrill},
+	urldate = {2024-11-08},
+	date = {2023-05-29},
 }
 
 @online{noauthor_sick-lidar_nodate,
@@ -243,6 +361,49 @@ Version Number: 4},
 	author = {Mayerhöfer, Thomas G. and Pahlow, Susanne and Popp, Jürgen},
 	urldate = {2024-10-10},
 	date = {2020-09-15},
+	langid = {english},
+}
+
+@article{klaas-witt_five_2022,
+	title = {The five main influencing factors for lidar errors in complex terrain},
+	volume = {7},
+	rights = {https://creativecommons.org/licenses/by/4.0/},
+	issn = {2366-7451},
+	url = {https://wes.copernicus.org/articles/7/413/2022/},
+	doi = {10.5194/wes-7-413-2022},
+	abstract = {Abstract. Lidars have become a valuable technology to assess the wind resource at hub
+height of modern wind turbines. However, because of the assumption of
+homogeneous flow in their wind vector reconstruction algorithms, common wind profile Doppler lidars suffer from errors at complex terrain sites. This study analyses the impact of the five main influencing factors for lidar measurement errors in complex terrain, i.e. orographic complexity,
+measurement height, surface roughness and forest, atmospheric stability, and half-cone opening angle, in a non-dimensional, model-based parameter study. In a novel approach, the lidar error ε is split up into a part εc, caused by flow curvature at the measurement points of the lidar, and a part εs, caused by the local speed-up effects between the measurement points. This approach allows for a systematic and complete interpretation of the influence of the half-cone opening angle φ of the lidar on the total lidar error ε. It also provides information about the uncertainty in simple lidar error estimations that are based on inflow and outflow angles at the measurement points. The model-based parameter study is limited to two-dimensional Gaussian hills with hill height H and hill half-width L. H/L and z/L, with z being the measurement height, are identified as the main scaling factors for the lidar error. Three flow models of different complexity are used to estimate the lidar errors. The outcome of the study provides various findings that enable an assessment of the applicability of these flow models. The study clearly shows that orographic complexity, roughness and forest
+characteristics, and atmospheric stability have a significant
+influence on lidar error estimation. Based on the error separation approach
+it furthermore allows for an in-depth analysis of the influence of reduced
+half-cone opening angles, explaining contradiction in the previously
+available literature. The choice and parameterization of flow models and the design of methods for lidar error estimation are found to be essential to achieve accurate results. The use of a Reynolds-averaged Navier–Stokes ({RANS}) computational fluid dynamics ({CFD}) model in conjunction with an appropriate forest model is highly recommended for lidar error estimations in complex terrain since forest (and roughness) tends to reduce the lidar error. If atmospheric stability variation at a measurement site plays a vital role, it should also be considered in the modelling. When planning a measurement campaign, an accurate estimation of the predicted lidar error should be carried out in advance to choose a reasonable measurement location. This will decrease measurement uncertainties and maximize the value of the measurement data.},
+	pages = {413--431},
+	number = {1},
+	journaltitle = {Wind Energy Science},
+	shortjournal = {Wind Energ. Sci.},
+	author = {Klaas-Witt, Tobias and Emeis, Stefan},
+	urldate = {2024-11-09},
+	date = {2022-03-01},
+	langid = {english},
+}
+
+@article{clarke_principal_1998,
+	title = {The Principal Point and {CCD} Cameras},
+	volume = {16},
+	issn = {0031-868X, 1477-9730},
+	url = {https://onlinelibrary.wiley.com/doi/10.1111/0031-868X.00127},
+	doi = {10.1111/0031-868X.00127},
+	abstract = {The principal point has long been regarded as one of the fundamental parameters in camera calibration. In the age of film based aerial and large format terrestrial cameras, the principal point could be located by a variety of techniques with a certainty of ±10 mm (Carman and Brown, 1961) and this was considered sufficient. However, aerial cameras were precision, purpose built, expensive pieces of equipment where the assembly was painstaking and the location of the principal point measured to a known tolerance. In the digital era, photogrammetrists, and many others, are using cameras which have not been specifically designed or built for photogrammetry. For these cameras there is no requirement for the manufacturers to position the lens in a pre‐defined location relative to the image sensing plane or for the lens manufacturer to align the lens elements precisely. In fact, deviations from the centre of the sensor can be a considerable percentage of the extent of the sensor (up to 10 per cent for some zoom lenses (Burner, 1995)). This paper discusses the development of methods of obtaining the location of the principal point, considers the relationship between the principal point and other parameters in the functional model, and shows how the location of this point can be estimated with and without recourse to autocollimation methods.},
+	pages = {293--312},
+	number = {92},
+	journaltitle = {The Photogrammetric Record},
+	shortjournal = {The Photogrammetric Record},
+	author = {Clarke, T. A. and Wang, X. and Fryer, J. G.},
+	urldate = {2024-11-07},
+	date = {1998-10},
 	langid = {english},
 }
 
