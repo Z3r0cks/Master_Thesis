@@ -37,9 +37,31 @@
   v(12pt, weak: true)
   strong(it)
 }
+
+#let left_sign = rotate(
+    -90deg,
+    place(
+      dx: -450pt,
+      dy: -37pt,
+      [Synthesized sensor data from Neural Radiance Fields - Patrick Kaserer],
+    )
+  )
+
+#let right_sign = rotate(
+    -90deg,
+    place(
+      dx: -450pt,
+      dy: 490pt,
+      [Synthesized sensor data from Neural Radiance Fields - Patrick Kaserer],
+    )
+  )
+  
+// ------------------------------------------------------------------- TITLE PAGE
+
 #counter(page).update(0)
-#set page(numbering: none)
-// #set page(numbering: "I")
+#set page(numbering: "I")
+#set page(footer: none)
+
 #place(
   dx: (100% - 180pt),
   image("images/Hochschule_Furtwangen_HFU_logo.svg", width: 200pt)
@@ -63,7 +85,7 @@
 
 #text([on the faculty of digital media], size: 15pt) \
 #v(35pt)
-#strong(text([Synthesized sensor data from], size: 25pt, spacing: 18pt)) \
+#strong(text([Synthesized Sensor Data from], size: 25pt, spacing: 18pt)) \
 
 #strong(text([Neural Radiance Fields], size: 25pt, spacing: 18pt)) \
 
@@ -101,29 +123,30 @@
 
 = Table of Contents
 #outline(depth: 3, indent: 2em, title: none)
-
-#show outline: 
-#set heading(numbering: "1")
+#set heading(numbering: "1.")
 #set page(numbering: "1")
 #counter(page).update(1)
 
 #context counter(heading).update(0)
-#pagebreak()
+// #pagebreak()
+#set page(footer: auto)
+
 = Introduction <introduction>
+#left_sign
 Sensors enable machines to perceive and interpret the world around them. By allowing humans, through machines, to observe and measure aspects of the environment beyond human capability, sensors foster the development of technologies and machines that enhance our understanding of the world, physics, human behavior, and more. They are, therefore, indispensable for technological advancement.
 
 This thesis explores whether a synthetic LiDAR sensor can be generated within a Neural Radiance Field (NeRF) framework. By simulating LiDAR sensors in a NeRF, the aim is to determine the feasibility of virtual sensor models, offering insights into which physical sensors may be suitable or necessary for real-world applications. It explores the advantages and disadvantages of this approach.
 
 Industrial applications can be dangerous. The use of inappropriate sensors can cause injuries or worse. Testing potential sensors in a virtual environment, such as a NeRF, is safer and more efficient than experimenting with real sensors. Therefore, developing a method to simulate LiDAR sensors within NeRFs could significantly aid in selecting the correct sensors for specific applications. To understand how a LiDAR sensor can be simulated within a NeRF, it is essential to delve into the principles of distance measurement and the role of constants like the velocity of light. 
 
-An important area for sensors is measuring, especially distance measuring. In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. One such fundamental physical constant is the velocity of light, which can be used to calculate the distance between two points in space by determining the time required for light to travel between them. This concept forms the basis of the measurement principle known as "time-of-flight" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). One prominent example of a time-of-flight sensor is Light Detection and Ranging (LiDAR). They are different types of LiDAR. One type of LiDAR–which is the focus of this study–is the use of lasers that are directed at an object and then measure time it takes for the reflected light to return to the receiver, allowing it to generate a 3D or 2D image with spatial and depth data @noauthor_sick-lidar_nodate. It is difficult to estimate which LiDAR could be correct for each given application, highlighting the need for effective simulation methods. By focusing on simulating LiDAR sensors within a NeRF, this thesis aims to provide a tool for assessing the suitability of various LiDAR technologies in a controlled virtual environment only with images from the scene.
+An important area for sensors is measuring, especially distance measuring. In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. One such fundamental physical constant is the velocity of light, which can be used to calculate the distance between two points in space by determining the time required for light to travel between them. This concept forms the basis of the measurement principle known as "time-of-flight" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). One prominent example of a time-of-flight sensor is Light Detection and Ranging (LiDAR). They are different types of LiDAR. One type of LiDAR–which is the focus of this study—is the use of lasers that are directed at an object and then measure time it takes for the reflected light to return to the receiver, allowing it to generate a 3D or 2D image with spatial and depth data @noauthor_sick-lidar_nodate. It is difficult to estimate which LiDAR could be correct for each given application, highlighting the need for effective simulation methods. By focusing on simulating LiDAR sensors within a NeRF, this thesis aims to provide a tool for assessing the suitability of various LiDAR technologies in a controlled virtual environment only with images from the scene.
 
 This approach could offer significant advantages in terms of safety, cost, and efficiency when determining the most appropriate sensor for specific industrial applications. To effectively simulate LiDAR sensors in a virtual environment, advanced methods for 3D scene representation are required.
 
 It is difficult to measure the real world. Cameras can help, but they only show 2D scenes. Using a LiDAR sensor to measure the real world creates a 3D point cloud what is more difficult to understand. One way to create a 3D scene from 2D images is with NeRF.
 
 In 2020, #cite(<mildenhall_nerf_2020>, form: "author") introduced NeRF as an AI-based approach for generating 3D representations of scenes from 2D images. One of the key advantages by using NeRF is the low memory usage and the photo-realistic representation. With the use of pipelines, it is also easy to use NeRFs, even for untrained users @schleise_automated_2024. The central idea behind NeRF is to utilize a neural network, rather than techniques that use a grid or a list system to determinate each point and its corresponding values within a 3D scene.
-
+#right_sign
 Like other neural networks, NeRF suffers from the disadvantage of being a "black box" @la_rocca_opening_2022. This makes it difficult or even impossible to fully understand the computations taking place, as the neural network provides limited interpretability. As a result, it is challenging to determine positions, distances, or lengths within the scene. Unlike methods, which typically store scene data in grids or lists, where each pixel within the scene is explicit know, NeRF only compute RGB and density values from given coordinates. Depending on the method which the neural network is trained, the distances and coordinates from the original scene are unknown.\
 
 In other graphical software, such as Unity, NVIDIA Omniverse, and Blender, the coordinates of each edge, vertex, or face are explicitly defined. However, in NeRF, these coordinates are not known. To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation.
@@ -137,10 +160,10 @@ To understand the implementation and the associated challenges, this chapter pro
 
 == Neural Radiance Fields <neural-radiance-fields>
 #cite(<mildenhall_nerf_2020>, form: "author") present a method for generating an AI-based 3D scene representation called Neural Radiance Fields (NeRF). The key idea behind NeRF is to synthesize novel views from limited input. The advantage of using a neural network is that it requires less memory than techniques that use lists and produces photo-realistic results. The main component is a neural network $F theta$, implemented as a multilayer perceptron (MLP), which is trained using the positions and directions (perspectives of pixel in an images) from input images to approximate RGB values and compute the density $sigma$ at a given point in the scene. The density and RGB values are then used to generate a 3D scene through volumetric rendering.
+#v(3mm)
 #figure(image("images/nerf_image_mildenhall_1.png", width: 85%), caption: [Overview of the NeRF scene representation. Sampling the 5D input location and direction $x, y, z, theta, phi$ (a) to feed the neural network (b). Then using volumetric rendering techniques to render the scene (c) and optimizing the scene with backpropagation since volumetric rendering
 function is differentiable (based on Mildenhall et al. (2020), Figure 2).])<fig:shift_image>
-
-=== Ill-Posed problem
+#v(3mm)
 One problems which NeRF address is  the ill-posed problem:
 
 - #strong[Non-unique solution:] There is no clear way to reconstruct a 3D scene from limited 2D images.
@@ -159,9 +182,9 @@ These parameters are:
   r_11, r_12, r_13, p_x;r_21, r_22, r_23, p_y;r_31, r_32, r_33, p_z;0, 0, 0, 1,
 ) $
 
-- #strong[Image resolution:] Must be the same for all images when using Nerfstudio.\
-- #strong[Focal length:] Determining the optical distance between the sensor at the camera's focal plane and the location where light rays converge to create a clear image of an object. The angle of view is wider and the magnification is lower with a shorter focal length @black_nikonusa_nodate.
-- #strong[Principle point:] The principal point represents a fundamental concept in the fields of optics and photography. It denotes the point on the image plane at which the optical axis of the lens intersects the vertical axis. In theoretical models, this point is situated at the geometric center of the image sensor or film. However, in practical applications, manufacturing tolerances or lens aberrations can result in a slight deviation of the principal point from its intended position @clarke_principal_1998. 
+- #strong[Image Resolution:] Must be the same for all images when using Nerfstudio.\
+- #strong[Focal Length:] Determining the optical distance between the sensor at the camera's focal plane and the location where light rays converge to create a clear image of an object. The angle of view is wider and the magnification is lower with a shorter focal length @black_nikonusa_nodate.
+- #strong[Principle Point:] The principal point represents a fundamental concept in the fields of optics and photography. It denotes the point on the image plane at which the optical axis of the lens intersects the vertical axis. In theoretical models, this point is situated at the geometric center of the image sensor or film. However, in practical applications, manufacturing tolerances or lens aberrations can result in a slight deviation of the principal point from its intended position @clarke_principal_1998. 
 - #strong[Distortion:] Is an optical aberration in which straight lines in the object appear as curved lines in the image. This effect often occurs with lenses and can affect the geometric accuracy of images. Prominent forms are barrel distortion and pincushion distortion @li_efficient_2024.
 
 In an ideal case, as in @fig:pos, all cameras are evenly spaced around a center point and all camera positions are known. This center point thus acts as the center of gravity and the origin of the coordinate system of the NeRF scene. The NeRF architecture recognizes and learns from the camera positions and can derive the distances in the scene based on these positions.\
@@ -175,11 +198,13 @@ Training the model with known camera poses has the benefit that the model knows 
 
 This is illustrated in @fig:pos3. While the coordinates in the scene with known parameters are approximately identical to those in the original scene, the use of colmap for parameter estimation results in a shift of these coordinates. Additionally, the scale differs, resulting in erroneous values when measuring distances without reference object.\
 \
-#strong[Structure from motion]\
-#lorem(30)
+#strong[Structure from Motion]\
+Colmap is used for pose estimation with structure from motion (SfM). Since Structure from Motion is based on the reconstruction of 3D point positions and camera parameters exclusively from 2D images, the resulting scene geometry is only defined on a relative scale. This means that neither the absolute scaling nor the exact coordinates of the original scene can be determined without additional reference information.
 
-#strong[Pose estimation with marker]\
-There are additional methods for pose estimation beyond those employed by colmap. One such method is marker-based pose estimation.
+#v(4mm)
+
+#strong[Pose Estimation with Marker]\
+Using marker for pose estimation 
 
 === Neural Network Architecture <neural-network-architecture>
 The MLP consists of nine fully connected layers: eight layers with 256 neurons each and one with 128 neurons. It uses the #emph[Rectified Linear Unit] (ReLU) as the activation function, a non-linear function that leaves positive inputs unchanged while setting negative inputs to zero.
@@ -329,9 +354,8 @@ In order to obtain a point cloud within the scene or as a plot, it is necessary 
 #figure(image("images/implementation/second.png", width: 300pt), caption: [Frontend implementation as activity diagram. After receiving the frustum data from the frontend, the user can choose between Sick LiDAR, individual measurement and calibration. This returns the LiDAR resolution and activates the process to obtain the densities in the backend (illustration by author).])
 
 == Backend <backend>
-#text(fill:blue, [Beim Backend bin ich mir sehr unschlüssig. Nerfstudio selbst benutzt ein unübersichtliches Backend bei dem ich mir nicht sicher bin, ob ich da im Detail oder auch nur grob darauf eingehen soll. Ich habe tatsächlich selten eine Software gesehen die so inkonsistent geschrieben wurde. Auf der anderen Seite ist die Arbeit am Code, das was ich die letzten Monate gemacht habe (auch das Backend zu verstehen), und irgendwie würde ich das auch gerne beschreiben und würdigen. Auf den Algroithmus gehe ich aber weiter unten ein. Ein Flowchart wäre hier aber sehr unspannend weil eigentlich nur von Methode zu Methode springt. Vermutlich werde ich versuchen den mehr spannenden Teil, der vor allem mit meine Arbeit zu tun hat, darzustellen ohne auf alles einzugehen.])
-// The main part of the backend is to parse the given data from the frontend and compute the density values which are then send back to the frontend. The data from the frontend are the exact position $(x , y , z)$ from the frustum and its orientation $(theta , phi.alt)$ in the scene. Due the complexity of Nerfstudio it is relevant to show the process to compute the densities more detailed. \
-// After clicking on a button to create a point cloudh
+- Kurze Beschreibung, wie das Backend verläuft. Nur, dass eine Kamera generiert wird. Diese dann durch verschieden Schritte das ANN anspricht und anschließend eine Liste mit Daten (Density, positions) zurück gibt.
+- Die Änderungen die ich hinzugefügt habe, z.B: das hinzufügen eines eigenen Kamertyps, da Nerfstudio auf echte Kameras ausgelegt ist, und nicht auf LiDAR mit 360 Grad.
 
 == Scene recognition
 NeRF as an artificial neural network learns from differences within images. These differences can be in terms of color, texture, shape, or lighting variations. When a scene contains homogeneous areas—regions with uniform color and texture—NeRF faces challenges in accurately reconstructing these areas spatially.\
@@ -359,31 +383,40 @@ The following illustrations depict various floor plans. The leftmost column pres
 #let height = 100pt
 
 #let graph_width = 190pt
-#align(
-   grid(
-    columns: 3,
-    column-gutter: 3mm,
-    align: bottom,
-    image("images/implementation/floor/grey1.png", width: width),
-    image("images/implementation/floor/grey2.png", width: width),
-    image("images/implementation/floor/grey_graph.png", width: graph_width),
-  )
+#figure(
+  align(
+    grid(
+      columns: 3,
+      column-gutter: 3mm,
+      align: bottom,
+      image("images/implementation/floor/grey1.png", width: width),
+      image("images/implementation/floor/grey2.png", width: width),
+      image("images/implementation/floor/grey_graph.png", width: graph_width),
+    ),
+  ),
+  caption: [Left: Point cloud of the NeRF scene with gray ground with reflections. The points are only on the cube and the ground. Middle: Point cloud plotted for better recognition. Right: Plot described below without recognizable pattern. To illustrate the problems of spatial recognition by ANN from NeRFs by using a homogenous floor and reflections]
 )
+  
 The first example has a homogeneous gray floor with reflections. The left image shows some artifacts at the bottom of the image. This is due to the reflections on the original scene. The point cloud on the cube and the shadow on the floor are well visible. There are more points outside the shadow that are hard to see. These points are below the ground level. This is better visible on the middle image which is the plot from the same position. The graph is difficult to evaluate. Most of the areas below the frustum have no values because the distance is limited to 50 meters for better representation. The other parts depend on the neural network. There is no recognizable pattern. . There is no recognizable pattern. It is important to note that the point cloud from the left image and the middle image are similar but not the same. Both point clouds have the same origin in the same scene, but the results are not the same because of the use of a neural network to approximate the densities. The results of the graph use the same scene but not the same positions as the first two images. Therefore, they should not be compared directly.
-#align(
-   grid(
-    columns: 3,
-    column-gutter: 3mm,
-    align: bottom,
-    image("images/implementation/floor/grey_no_reflection.png", width: width),
-    image("images/implementation/floor/grey_no_reflection2.png", width: width),
-    image("images/implementation/floor/grey_no_reflections_graph.png", width: graph_width),
-  )
+
+#figure(
+  align(
+    grid(
+      columns: 3,
+      column-gutter: 3mm,
+      align: bottom,
+      image("images/implementation/floor/grey_no_reflection.png", width: width),
+      image("images/implementation/floor/grey_no_reflection2.png", width: width),
+      image("images/implementation/floor/grey_no_reflections_graph.png", width: graph_width),
+    ),
+  ),
+  caption: [Left: Point cloud of the NeRF scene with gray ground without reflections. The points are only on the cube and the ground. Middle: Point cloud plotted for better recognition. Right: Plot described below without recognizable pattern. To illustrate the problems of spatial recognition by ANN from NeRFs by using a homogenous floor and reflections]
 )
 
 The second example also has a homogeneous gray floor, but without reflections. There are no artifacts on the floor, which also happens in other test scenes where the reflections are removed. As in the first example, most of the points are on the cube and the shadow. As the second image shows, there are also a few points outside these areas. We can see a kind of gradient under the frustum, which has more points than the first example. The graph also has some parts without values. The high peak could be due to fewer images from the training (which is better to see in the fourth example). The images are focused on the cube, the shadow, and the ground around it. Some of the samples are out of focus. The right side of the graph still seems chaotic, but less random than the first example with a constant average distance of the points. This is better but not a good result because the edges shout have higher distances.
 
-#align(
+#figure(
+  align(
    grid(
     columns: 3,
     column-gutter: 3mm,
@@ -392,6 +425,9 @@ The second example also has a homogeneous gray floor, but without reflections. T
     image("images/implementation/floor/checker2.png", width: width),
     image("images/implementation/floor/checker_graph.png", width: graph_width),
   )
+),
+  ),
+  caption: [Left: Point cloud of the NeRF scene with gray ground with reflections. The points are only on the cube and the ground. Middle: Point cloud plotted for better recognition. Right: Plot described below without recognizable pattern. To illustrate the problems of spatial recognition by ANN from NeRFs by using a homogenous floor and reflections]
 )
 
 The third example use a checkerboard pattern with different colors. The moste points are on the floor and not only on the shadow and the cube. The use of this pattern led to a significantly better result as the examples before, even if the checkerboard pattern is repetitive. The graphs shows in the middle an approximation to an good and recognizable pattern in average. 
@@ -626,26 +662,49 @@ In order to test the hypothesis, 2560 rays were cast onto different surfaces at 
   table(
       columns: 2,
       stroke: none,
-      [Average Deviation], [0.0001116 m],
-      [Average Density], [233.069]
-  ),
-)
-#figure(
-  table(
-      columns: 3,
-      stroke: none,
-       [],[Average Deviation with...],[Average Density with...],
-       [1 meter:],[-0.00074724], [245.23731445],
-       [1.5 meter:],[-0.00193337], [168.95489944],
-       [2 meter:],[-0.00030199], [156.13135481],
-       [2.5 meter:],[0.00103657], [130.91514499],
-       [3 meter:],[0.00167161], [141.78231862],
-       [3.5 meter:],[0.00099374], [180.60095075],
-       [4 meter:],[0.00077826], [277.47396092],
-       [4.5 meter:],[-0.00060454], [563.45454628],
+      align: start,
+      [Average Deviation:], [0.0001116 m],
+      [Average Density:], [233.069]
   ),
 )
 
+
+#set table(
+  stroke: none,
+  gutter: 0.2em,
+  fill: (x, y) =>
+    if x == 0 or y == 0 { gray },
+  inset: (right: 1.5em),
+)
+
+#show table.cell: it => {
+  if it.x == 0 or it.y == 0 {
+    set text(white)
+    strong(it)
+  } else if it.body == [] {
+    // Replace empty cells with 'N/A'
+    pad(..it.inset)[_N/A_]
+  } else {
+    it
+  }
+}
+
+#align(center,
+  table(
+    columns: 3,
+    align: center,
+    gutter: 5pt,
+    [], [Average Deviation with:], [Average Density with:], 
+         [1 meter],[-0.00074724], [245.23731445],
+         [1.5 meter],[-0.00193337], [168.95489944],
+         [2 meter],[-0.00030199], [156.13135481],
+         [2.5 meter],[0.00103657], [130.91514499],
+         [3 meter],[0.00167161], [141.78231862],
+         [3.5 meter],[0.00099374], [180.60095075],
+         [4 meter],[0.00077826], [277.47396092],
+         [4.5 meter],[-0.00060454], [563.45454628],
+  )
+)
 #figure(
   image("images/results/average_re.png", ), caption: [Average distance from all samples]
 )
@@ -704,48 +763,49 @@ The main limitation of this application is, that it can not used in realtime, wh
 #pagebreak()
 
 = Conclusion <conclusion>
-#strong[Vergleich und Bewertung:]
 
-Was sind die genauen Unterschiede zwischen einem echten und einem synthetischen LiDAR in Bezug auf Genauigkeit und Performance?
-Wie schneidet dein Modell im Vergleich zu einer realen Simulation ab?
-Welche Vor- und Nachteile ergeben sich bei der Nutzung von NeRF für LiDAR-Simulation im Vergleich zu traditionellen Methoden?
-Wie steht der Aufwand für die Kalibrierung des synthetischen LiDARs im Vergleich zu einem realen LiDAR?
-
-#strong[Validierung und Tests:]
-
-Wie validierst du die Genauigkeit der von deinem synthetischen LiDAR gesammelten Daten? Gibt es Metriken, die zur Evaluierung verwendet werden?
-Welche Tests wurden durchgeführt, um die Robustheit deines synthetischen LiDARs zu überprüfen? Sind die Ergebnisse reproduzierbar?
-
-#strong[Anwendungsbereiche und Limitationen:]
-
-Für welche realen Szenarien wäre die Anwendung deines synthetischen LiDARs in NeRF besonders nützlich?
-Gibt es spezielle Szenarien, in denen dein Ansatz nicht funktioniert oder nur eingeschränkt geeignet ist?
-Wie würde dein Ansatz in einer dynamischen Szene funktionieren, also wenn sich Objekte im Raum bewegen?
-
-
-#strong[NVIDIA Omniverse und Integration:]
-
-Wie wird NVIDIA Omniverse in den gesamten Workflow integriert? Ist es möglich, diesen Schritt zu ersetzen oder zu optimieren?
-Welche spezifischen Herausforderungen traten bei der Nutzung von NVIDIA Omniverse auf?
-
-#strong[Implementierung und Architektur:]
-
-Welche konkreten Designentscheidungen hast du in Bezug auf die Architektur des NeRF getroffen (z.B. Schichtung, Aktivierungsfunktionen)? Was sind die Gründe hinter diesen Entscheidungen?
-Wie genau funktioniert das Frontend in Bezug auf die Nutzerinteraktion? Welche Funktionalitäten sind kritisch für den Nutzer?
-
-#strong[Fazit und Ausblick:]
-
-Welche offenen Fragen oder Herausforderungen gibt es aktuell noch in deinem Ansatz?
-Gibt es Möglichkeiten, deinen Ansatz in Zukunft zu erweitern? Zum Beispiel durch bessere Netzwerkarchitekturen oder den Einsatz von neuen Sensormodellen?
 #pagebreak()
 
 = Outlook <discussion>
+In this chapter I will propose further research about this study.
+
+== Psyhsical Propeties
+As mentiont, LiDAR results depends on physical properties. While it es difficult to simulate such properties it would be interesting if such computation can done with one ore multiple neural networks implemented in NeRF.
+
+== Medium of Velocity of Light
+The normal use case of an LiDAR-Sensor are in Air where the different between the medium through what the light has pass through are similar to vacuum. The benefit of this applications is, that real rays are not needed ans so on, it can also be used for other mediums, like water or glass.
+
+== Gaussian splat
+After 
+
 #pagebreak()
 
 = Discussion <discussion>
 #pagebreak()
 
 = Use of AI in this thesis <use-of-ai-in-this-thesis>
+The Use of AI has a lot of benefits for research purpose but it is also necessary to understand the rules by using an AI
+
+#table(
+  columns: 3,
+  stroke: none,
+  table.header(
+    [*Name of AI*], [*Why used*], [*Where*],
+  ),
+  [ChatGPT], [For ....], [overall],
+)
+#pagebreak()
+
+= Declaration on honest academic work <use-of-ai-in-this-thesis>
+With this document I, Patrick Kaserer, declare that I have drafted and created the piece of work in hand myself. I declare that I have only used such aids as are permissible and used no other sources or aids than the ones declared. I furthermore assert that any passages used, be that verbatim or paraphrased, have been cited in accordance with current academic citation rules and such passages have been marked accordingly. Additionally, I declare that I have laid open and stated all and any use of any aids such as AI-based chatbots (e.g. ChatGPT), translation (e.g. Deepl), paraphrasing (e.g. Quillbot) or programming (e.g. Github Copilot) devices and have marked any relevant passages accordingly.\
+\
+I am aware that the use of machine-generated texts is not a guarantee in regard of the quality of their content or the text as a whole. I assert that I used text-generating AI-tools merely as an aid and that the piece of work in hand is, for the most part, the result of my creative input. I am entirely responsible for the use of any machine-generated passages of text I used. 
+I also confirm that I have taken note of the document "Satzung der Hochschule Furtwangen (HFU) zur Sicherung guter wissenschaftlicher Praxis" dated October 27, 2022 and that I have followed the statements there.\
+\
+I am aware that my work may be examined to determine whether any non-permissible aids or plagiarism were used. I also acknowledge that a breach of § 10 or § 11 section 4 and 5 of HFU’s study and examination regulations’ general part may lead to a grade of 5 or «nicht ausreichend»  (not sufficient) for the work in question and / or the exclusion from any further examinations
+#place(dy: 150pt, [Place, Date])
+#place(dy: 150pt, dx: 300pt,  [Signature])
+
 #pagebreak()
 
 #bibliography("references.bib", full: false, style:"apa")
