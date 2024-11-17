@@ -1,4 +1,5 @@
 #import "@preview/lovelace:0.3.0": *
+#import "@preview/blinky:0.1.0": link-bib-urls
 
 #show figure.caption: set align(start);
 #show figure.caption: set text(8pt)
@@ -36,7 +37,9 @@
   v(12pt, weak: true)
   strong(it)
 }
-
+#counter(page).update(0)
+#set page(numbering: none)
+// #set page(numbering: "I")
 #place(
   dx: (100% - 180pt),
   image("images/Hochschule_Furtwangen_HFU_logo.svg", width: 200pt)
@@ -82,31 +85,63 @@
           text([University supervisor:], size: title_size), text([Prof. Dr. Uwe Hahne], size: title_size),
           text([External supervisor:], size: title_size), text([Dr. Jakob Lindinger], size: title_size),
           text([submitted], size: title_size), text([30.11.2024], size: title_size),
-))
+  )
+)
 
 #pagebreak()
- 
+
 = Abstract
-// #lorem(500)
-
 #pagebreak()
+
 = Zusammenfassung
-#set heading(numbering: "1.")
-// #lorem(500)
-
 #pagebreak()
 
-#outline(depth: 4, indent: 2em)
+= Preface
+#pagebreak()
+
+= Table of Contents
+#outline(depth: 3, indent: 2em, title: none)
+
+#show outline: 
+#set heading(numbering: "1")
 #set page(numbering: "1")
 #counter(page).update(1)
 
+#context counter(heading).update(0)
+#pagebreak()
 = Introduction <introduction>
-The Latin word "sentire" which means "to feel" or "to sense," is the etymological root of the term "sensor." It provides an accurate and concise definition of the fundamental nature of sensors: They enable machines to perceive and interpret the world around them. By allowing humans, through machines, to observe and measure aspects of the environment beyond human capability, sensors foster the development of technologies and machines that enhance our understanding of the world, physics, human behavior, and more. They are, therefore, indispensable for technological advancement. \
+Sensors enable machines to perceive and interpret the world around them. By allowing humans, through machines, to observe and measure aspects of the environment beyond human capability, sensors foster the development of technologies and machines that enhance our understanding of the world, physics, human behavior, and more. They are, therefore, indispensable for technological advancement.
 
-In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. This constant can be utilized as a universal language to describe the universe, provided that it is known. One such fundamental physical constant is the velocity of light, which can be employed to calculate the distance between two points in space by determining the time required for light to travel between them. As an sensor, this concept can be described as radar (radio detection and ranging) principle: Send a signal and measure the time it takes for the reflection to arrive. The measurement of the time required for a signal to traverse a given distance is referred to as \"time-of-flight\" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). To be correct, the velocity of light depends on the medium though which it travels, but this is not necessary for this thesis because the difference between the speed of light in a vacuum and in air is small (0.00029%, @arribas_indirect_2020) but it is important in other mediums such as glass or water, which have a greater effect on the speed, and this could be interesting aspect to future prospects of this implementation. \
-One prominent example of a time-of-flight sensor are Light Detection and Ranging (LiDAR) sensors. LiDAR is a technology that uses a laser to target an object and then measures the time it takes for the reflected light to return to the receiver. This means LiDAR sensors can generate a 3D or 2D image with spatial and depth data to detect, measure, localize, and track objects in real-time with 360° resolution. @noauthor_sick-lidar_nodate. They are different types of LiDAR sensor, such Frequency Modulated Continuous Wave LiDAR which are often used in cars or solid-state solid-state LiDAR which has no moving parts. #text(fill:blue, [etwas abgehakt, könnte noch 1, 2 Sätze mehr gebrauchen])\
+This thesis explores whether a synthetic LiDAR sensor can be generated within a Neural Radiance Field (NeRF) framework. By simulating LiDAR sensors in a NeRF, the aim is to determine the feasibility of virtual sensor models, offering insights into which physical sensors may be suitable or necessary for real-world applications. It explores the advantages and disadvantages of this approach.
 
-In 2020, Mildenhall et al. introduced an AI-based method for generating a 3D scene representation. This method is known as #emph[Neural Radiance Fields] (NeRF). One of the key advantages by using NeRF is the low memory usage and the photo-realistic representation. With the use of pipelines, it is also easy to use NeRFs, even for untrained users @schleise_automated_2024. NeRF can be extended with other methods, such as object recognition through integrated additional neural networks or scene manipulation. The central idea behind NeRF is to utilize a neural network, rather than techniques that use a grid or a list system to determinate each point and its corresponding values within a 3D scene. However one problems which NeRF also address are the ill-posed problem:
+Industrial applications can be dangerous. The use of inappropriate sensors can cause injuries or worse. Testing potential sensors in a virtual environment, such as a NeRF, is safer and more efficient than experimenting with real sensors. Therefore, developing a method to simulate LiDAR sensors within NeRFs could significantly aid in selecting the correct sensors for specific applications. To understand how a LiDAR sensor can be simulated within a NeRF, it is essential to delve into the principles of distance measurement and the role of constants like the velocity of light. 
+
+An important area for sensors is measuring, especially distance measuring. In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. One such fundamental physical constant is the velocity of light, which can be used to calculate the distance between two points in space by determining the time required for light to travel between them. This concept forms the basis of the measurement principle known as "time-of-flight" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). One prominent example of a time-of-flight sensor is Light Detection and Ranging (LiDAR). They are different types of LiDAR. One type of LiDAR–which is the focus of this study–is the use of lasers that are directed at an object and then measure time it takes for the reflected light to return to the receiver, allowing it to generate a 3D or 2D image with spatial and depth data @noauthor_sick-lidar_nodate. It is difficult to estimate which LiDAR could be correct for each given application, highlighting the need for effective simulation methods. By focusing on simulating LiDAR sensors within a NeRF, this thesis aims to provide a tool for assessing the suitability of various LiDAR technologies in a controlled virtual environment only with images from the scene.
+
+This approach could offer significant advantages in terms of safety, cost, and efficiency when determining the most appropriate sensor for specific industrial applications. To effectively simulate LiDAR sensors in a virtual environment, advanced methods for 3D scene representation are required.
+
+It is difficult to measure the real world. Cameras can help, but they only show 2D scenes. Using a LiDAR sensor to measure the real world creates a 3D point cloud what is more difficult to understand. One way to create a 3D scene from 2D images is with NeRF.
+
+In 2020, #cite(<mildenhall_nerf_2020>, form: "author") introduced NeRF as an AI-based approach for generating 3D representations of scenes from 2D images. One of the key advantages by using NeRF is the low memory usage and the photo-realistic representation. With the use of pipelines, it is also easy to use NeRFs, even for untrained users @schleise_automated_2024. The central idea behind NeRF is to utilize a neural network, rather than techniques that use a grid or a list system to determinate each point and its corresponding values within a 3D scene.
+
+Like other neural networks, NeRF suffers from the disadvantage of being a "black box" @la_rocca_opening_2022. This makes it difficult or even impossible to fully understand the computations taking place, as the neural network provides limited interpretability. As a result, it is challenging to determine positions, distances, or lengths within the scene. Unlike methods, which typically store scene data in grids or lists, where each pixel within the scene is explicit know, NeRF only compute RGB and density values from given coordinates. Depending on the method which the neural network is trained, the distances and coordinates from the original scene are unknown.\
+
+In other graphical software, such as Unity, NVIDIA Omniverse, and Blender, the coordinates of each edge, vertex, or face are explicitly defined. However, in NeRF, these coordinates are not known. To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation.
+
+This implementation can be employed for the purpose of measuring distances within a given scene, in a manner analogous to that of an artificial LiDAR. Additionally, it can be utilized for the precise measurement of distances between two points within the scene. Furthermore, the implementation allows for the use of a reference object within the scene, which is used to compute a scale factor that is then applied to the measured distances. This method also can used to mapping closed areas like an LiDAR sensor. \
+In order to implement the method, a technique is employed which enables the detection of the density value at a given point within the scene, as well as the calculation of the distance between the origin and the points. NVIDIA Omniverse is utilized for the generation of images, the management of camera parameters and as a means of comparison with a simulated LiDAR. Meanwhile, Nerfstudio with Nerfacto is employed for the creation of the NeRF and the implementation of the proposed methods.
+#pagebreak()
+
+= Related Work <related-work>
+To understand the implementation and the associated challenges, this chapter provides a deeper dive into the fundamental principles of Neural Radiance Fields (NeRF). Additionally, it highlights similar works that combine NeRF with LiDAR systems, offering a comprehensive context for the methods and contributions discussed later in this thesis.
+
+== Neural Radiance Fields <neural-radiance-fields>
+#cite(<mildenhall_nerf_2020>, form: "author") present a method for generating an AI-based 3D scene representation called Neural Radiance Fields (NeRF). The key idea behind NeRF is to synthesize novel views from limited input. The advantage of using a neural network is that it requires less memory than techniques that use lists and produces photo-realistic results. The main component is a neural network $F theta$, implemented as a multilayer perceptron (MLP), which is trained using the positions and directions (perspectives of pixel in an images) from input images to approximate RGB values and compute the density $sigma$ at a given point in the scene. The density and RGB values are then used to generate a 3D scene through volumetric rendering.
+#figure(image("images/nerf_image_mildenhall_1.png", width: 85%), caption: [Overview of the NeRF scene representation. Sampling the 5D input location and direction $x, y, z, theta, phi$ (a) to feed the neural network (b). Then using volumetric rendering techniques to render the scene (c) and optimizing the scene with backpropagation since volumetric rendering
+function is differentiable (based on Mildenhall et al. (2020), Figure 2).])<fig:shift_image>
+
+=== Ill-Posed problem
+One problems which NeRF address is  the ill-posed problem:
 
 - #strong[Non-unique solution:] There is no clear way to reconstruct a 3D scene from limited 2D images.
 
@@ -114,55 +149,37 @@ In 2020, Mildenhall et al. introduced an AI-based method for generating a 3D sce
 
 - #strong[Incompleteness of the data:] Not all information about the scene is known in the input data.
 
-NeRF compensate this ill-posed problem by using a neural network which learns the context from the scene. #text(fill:blue, [Zu wenig im Detail. Beschreiben wie NeRF das macht. Hat jemand einen Ansatz als Unterstützung?])\
-\
-Like other neural networks, NeRF suffers from the disadvantage of being a \"black box\" @la_rocca_opening_2022. This makes it difficult or even impossible to fully understand the computations taking place, as the neural network provides limited interpretability. As a result, it is challenging to determine positions, distances, or lengths within the scene. Unlike methods, which typically store scene data in grids or lists, where each pixel within the scene is explicit know, NeRF only compute RGB and density values from given coordinates without reference to the original scene. \
-
-#figure(image("images/introduction/implicite.png", width: 100%), caption: [Comparison between implicit and explicit coordinates in NVIDIA Omniverse and a NeRF scene representation. The use of NVIDIA Omniverse to calculate the distance between two known points in a 3D scene using the Pythagorean theorem (A). The coordinates as user input: $x'_a , y'_a , z'_a$ for the neural network $f_theta$ which interprets these coordinates by computing pixels in the space it learns from training (B). Illustration of the problem of getting a point closest to an obstacle in NeRF (C) (illustration by author).#text(fill:blue, [Ich suche immer noch nach einer besseren Darstellung für das rechte Bild. Es wird nicht ganz klar, was das Problem darstellt.])])<fig:impicit>
-
-
-As illustrated in @fig:impicit it is challenging to obtain the requisite coordination to measure the distance between the two points. While the distance can be readily calculated in NVIDIA Omniverse due to the availability of known coordinates, the coordinates in a NeRF scene are dependent on the original images and their associated parameters. It is feasible to approximate the same coordinates as in NVIDIA Omniverse. However, due to the issue of infinite points in space and the lack of knowledge regarding the coordinate of each object within the scene, it is not possible to obtain the exact coordinates, which represents a significant challenge in the implementation of this approach with LiDAR sensors, which are highly precise. Nevertheless, even when it would be feasible to obtain the exact positions, the distance would not be accurate, given that the NeRF scene lacks any references regarding scale. This understanding also depends on the camera parameters. Another Problem is to obtain the closest point on an obstacle. A NeRF approximates the original scene by approximates the RGB and density values. These values are not exact representations of the scene. In the real world or in graphical software, it is possible to use a pen or click on an object because its coordinates are known and defined. However, in a NeRF, every pixel is only an approximation of an RGB value, influenced by the density value depending from images. This means that it is not possible to take a pen and mark a specific point, because the exact position and properties of that point are not explicitly defined in the model. \
-\
-This thesis addresses the scientific questions of whether is it possible to synthesize sensor data within a NeRF scene. It explores the advantages and disadvantages of this approach, the requirements and differences compared to the data from a simulated LiDAR sensor. \
-The implementation can be employed for the purpose of measuring distances within a given scene, in a manner analogous to that of an artificial LiDAR. Additionally, it can be utilized for the precise measurement of distances between two points within the scene. Furthermore, the implementation allows for the use of a reference object within the scene, which is used to compute a scale factor that is then applied to the measured distances. \
-In order to implement the aforementioned method, a technique is employed which enables the detection of the density value at a given point within the scene, as well as the calculation of the distance between the origin and the aforementioned point. NVIDIA Omniverse is utilized for the generation of images, the management of camera parameters and as a means of comparison with a simulated LiDAR. Meanwhile, Nerfstudio with Nerfacto is employed for the creation of the NeRF and the implementation of the proposed methods.
-#pagebreak()
-
-= Related Work <related-work>
-== LiDAR Simulation <lidar-simulation>
-According to @zhang_nerf-lidar_2024, one common approach to LiDAR simulation involves creating a 3D virtual environment and rendering point clouds using physics-based simulations. This method allows for the generation of synthetic LiDAR data. However, Zhang et al. note that these virtual datasets often exhibit significant domain gaps when compared to real-world data, especially when used to train deep neural networks. The primary reason is that virtual environments cannot fully replicate the complexity and intricate details of the real world. Instead of using physical simulation of the real world, this work focus on understanding a neural network to compute the correct positions from densities in a 3D scene.
-
-== Black Box <black-box>
-As NeRF is a feed-forward artificial neural network (ANN), it suffers from the disadvantage of being a black box. Interpreting how the model (a trained ANN that is used to approximate a function of interest) uses the input variables to predict the target is complicated by the complexity of ANNs @la_rocca_opening_2022. Even those who create them cannot understand how the variables are combined to produce predictions. Black box prediction models, even with a list of input variables, can be such complex functions of the variables that no human can understand how the variables work together to produce a final prediction @rudin_why_2019. To interpret NeRFs computation, which are only complex functions, as a coordinates, it is not possible to efficiently and quickly define the values while the ANN is computing. It limits the ability to understand how exactly the calculations are done and limits the understanding of the coordinates to the result. One challenge in this implementation is determining the position of a point on an obstacle, which is not feasible for exact values. To address this issue, it is essential to comprehend the underlying computation of NeRF densities. Given that NeRF is a black box, it is only possible to analyze the results, not the computation itself.
-
-== Neural Radiance Fields <neural-radiance-fields>
-#cite(<mildenhall_nerf_2020>, form: "author") present a method for generating an AI-based 3D scene representation called Neural Radiance Fields (NeRF). The key idea behind NeRF is to synthesize novel views from limited input. The advantage of using a neural network is that it requires less memory than techniques that use lists and produces photo-realistic results. The main component is a neural network $F theta$, implemented as a multilayer perceptron (MLP), which is trained using the positions and directions (perspectives of pixel in an images) from input images to approximate RGB values and compute the density $sigma$ at a given point in the scene. The density and RGB values are then used to generate a 3D scene through volumetric rendering.
-#figure(image("images/nerf_image_mildenhall_1.png", width: 85%), caption: [Overview of the NeRF scene representation. Sampling the 5D input location and direction $x, y, z, theta, phi$ (a) to feed the neural network (b). Then using volumetric rendering techniques to render the scene (c) and optimizing the scene with backpropagation since volumetric rendering
-function is differentiable (based on Mildenhall et al. (2020), Figure 2).])<fig:shift_image>
+NeRF address this ill-posed problem by utilizing a neural network that learns contextual information from the scene. The neural network minimizes the loss function between its computed outputs and the ground truth images, thereby learning to approximate the original scene. This approach enables reconstruction even from perspectives for which no images are provided, as long as spatial information is available from other images.
 
 === Positioning and parameters <positioning>
-NeRF learns from images. To do this, most NeRF variants require the extrinsic and intrinsic camera parameters. These parameters are important for measuring distances in a NeRF scene because both the positions and the scale factor in NeRF depend on the image parameters. \
+An important part of this study is the positioning and parameters for the NeRF to train the model. These are responsible for distance measurement and scene scale within the NeRF scene. NeRF learns from images. To do this, most NeRF variants require the extrinsic and intrinsic camera parameters. These parameters are important for measuring distances in a NeRF scene because both the positions and the scale factor in NeRF depend on the image parameters. \
 These parameters are:
 - The exact positions and orientation of each images used for the scene in form of a homogeneous 4x4 transform matrix: $ mat(
   delim: "[",
   r_11, r_12, r_13, p_x;r_21, r_22, r_23, p_y;r_31, r_32, r_33, p_z;0, 0, 0, 1,
 ) $
 
-- Image resolution: Must be the same for all images when using Nerfstudio.\
-- Focal length: Determining the optical distance between the sensor at the camera's focal plane and the location where light rays converge to create a clear image of an object. The focal length of the lens indicates the magnification, or the size of the individual elements, and the angle of view, or how much of the scene will be captured. Higher magnification and a narrower angle of view are associated with longer focal lengths. The angle of view is wider and the magnification is lower with a shorter focal length @black_nikonusa_nodate.
-- Principle point: The principal point represents a fundamental concept in the fields of optics and photography. It denotes the point on the image plane at which the optical axis of the lens intersects the vertical axis. In theoretical models, this point is situated at the geometric center of the image sensor or film. However, in practical applications, manufacturing tolerances or lens aberrations can result in a slight deviation of the principal point from its intended position @clarke_principal_1998. 
-- Distortion: Is an optical aberration in which straight lines in the object appear as curved lines in the image. This effect often occurs with lenses and can affect the geometric accuracy of images. Prominent forms are barrel distortion and pincushion distortion @li_efficient_2024.
+- #strong[Image resolution:] Must be the same for all images when using Nerfstudio.\
+- #strong[Focal length:] Determining the optical distance between the sensor at the camera's focal plane and the location where light rays converge to create a clear image of an object. The angle of view is wider and the magnification is lower with a shorter focal length @black_nikonusa_nodate.
+- #strong[Principle point:] The principal point represents a fundamental concept in the fields of optics and photography. It denotes the point on the image plane at which the optical axis of the lens intersects the vertical axis. In theoretical models, this point is situated at the geometric center of the image sensor or film. However, in practical applications, manufacturing tolerances or lens aberrations can result in a slight deviation of the principal point from its intended position @clarke_principal_1998. 
+- #strong[Distortion:] Is an optical aberration in which straight lines in the object appear as curved lines in the image. This effect often occurs with lenses and can affect the geometric accuracy of images. Prominent forms are barrel distortion and pincushion distortion @li_efficient_2024.
 
 In an ideal case, as in @fig:pos, all cameras are evenly spaced around a center point and all camera positions are known. This center point thus acts as the center of gravity and the origin of the coordinate system of the NeRF scene. The NeRF architecture recognizes and learns from the camera positions and can derive the distances in the scene based on these positions.\
 
-#figure(image("images/related_work/pose.png"), caption: [Left-handed: Symmetric and known camera positions where the centroid is in the center of the scene. The result would be the same coordinate system with the same distance in NeRF as in the original system. Right-handed: In order to simulate unknown camera positions,  the value of $x+1$ is added to each camera position. It should be noted that the centroid remains the midpoint of all positions, while the origin from the NeRF-Scene is situated at the top, with the coordinates $(0,0,0)$ (illustration by author).])<fig:pos>
+#figure(image("images/related_work/pose.png"), caption: [Left-handed: Symmetric and known camera positions where the centroid is in the center of the scene. The result would be the same coordinate system with the same distance in NeRF as in the original system. Right-handed: In order to simulate unknown camera positions,  the value of $x+1$ is added to each camera position. It should be noted that the centroid remains the midpoint of all positions, while the origin from the NeRF-Scene is situated at the top, with the coordinates $(0,0,0)$.])<fig:pos>
 
 For example, if the cameras are exactly one meter away from the center point, this distance is also correctly interpreted by the NeRF and used to reconstruct the geometry of the scene. In practice, however, symmetry or known camera poses are rare because the original scene does not allow symmetric image creation or the technical availability is not given for image poses outside a virtual world. Without knowing the exact camera parameters, this is often determined using tools that use structure-for-motion methods such as colmap, which leads to inaccuracies in pose detection. Using exact coordinates is faster and more precise than using tools for pose estimation and a reference object within the scene for scale estimation. \
 Training the model with known camera poses has the benefit that the model knows exact positions from the original scene and it reduces the possibility of making a calibration error with a reference object within the scene. Navigation and usability in the scene are also easier as the original coordinates can be used. \
 
-#figure(image("images/related_work/pose2.png"), caption: [Comparison of the two NeRF scene with same original scene and images but different parameter creation. While the origin in the scene with known parameters is the same as in the original scene (a), the scale as well as the position and rotation are different in the scene where the parameters are estimated with colmap (b) to see at the frustum location and orientation within the image. The distance without using a reference object for scale calibration (c) and with (d) for the NeRF scene with pose estimation. The distance without scale calibration in the scene where the parameters are known (e). The original distance is 1 meter. Note: The scale of the frustum in b is larger than in a, the frustum is not closer to the scene camera (illustration by author).])<fig:pos3>
+#figure(image("images/related_work/pose2.png"), caption: [Comparison of the two NeRF scene with same original scene and images but different parameter creation. While the origin in the scene with known parameters is the same as in the original scene (A), the scale as well as the position and rotation are different in the scene where the parameters are estimated with colmap (B) to see at the frustum location and orientation within the image. Note: The scale of the frustum in B is larger than in A, the frustum is not closer to the scene camera.])<fig:pos3>
 
-This is illustrated in @fig:pos3. While the coordinates in the scene with known parameters are approximately identical to those in the original scene, the use of colmap for parameter estimation results in a shift of these coordinates. Additionally, the scale differs, resulting in erroneous values when measuring distances without reference object.
+This is illustrated in @fig:pos3. While the coordinates in the scene with known parameters are approximately identical to those in the original scene, the use of colmap for parameter estimation results in a shift of these coordinates. Additionally, the scale differs, resulting in erroneous values when measuring distances without reference object.\
+\
+#strong[Structure from motion]\
+#lorem(30)
+
+#strong[Pose estimation with marker]\
+There are additional methods for pose estimation beyond those employed by colmap. One such method is marker-based pose estimation.
 
 === Neural Network Architecture <neural-network-architecture>
 The MLP consists of nine fully connected layers: eight layers with 256 neurons each and one with 128 neurons. It uses the #emph[Rectified Linear Unit] (ReLU) as the activation function, a non-linear function that leaves positive inputs unchanged while setting negative inputs to zero.
@@ -170,13 +187,10 @@ The MLP consists of nine fully connected layers: eight layers with 256 neurons e
 After capturing multiple images of a scene from different perspectives and obtaining the extrinsic and intrinsic camera parameters, the neural network uses the pixels from each image to cast rays into the scene. These rays are divided into samples (points) at specific intervals. Each point has its own coordinates in the scene and a direction derived from the ray.
 
 While the densities $sigma$ are determined by the exact position in space, the RGB values $c$ also requires the direction $theta , phi.alt$. This is important for multi-view representation because viewing the same position from different angles can reveal different content. This technique allows for the correct rendering of reflections and lighting effects depending on the perspective. To achieve this, the first eight layers of the MLP process the 3D coordinates $X = x , y , z$, outputting a density value and a feature vector. This feature vector is then combined with the viewing direction as polar coordinates $theta , phi.alt$ (the pixel perspective), and passed into the final layer, which returns normalized RGB color values @mildenhall_nerf_2020. Formally, this function can be represented as: \
+\
 $ X , theta , phi.alt arrow.r R G B , sigma $ \
-This function is important for solving the first problem of this thesis. To estimate the point on an object, a method is needed to calculate the correct density when the point is as close as possible to the obstacle.
-
-#figure(image("images/related_work/nerf_rays.png", width: 60%), caption: [Illustration of rays in NeRF. Casting a ray for each pixel from an image, which includes the 5D input direction $theta, phi$ and sampling points as a coordinate $x, y, z$. The direction and the coordinates are the input for the neural network, which outputs the density $sigma$ and the RGB value (illustration by author).])<fig:nerf_rays>
-
-there are additional methods for pose estimation beyond those employed by colmap. One such method is marker-based pose estimation, which utilizes Aruco markers. \
-#text(fill: blue, [Online gibt es ein Video bei dem jemand so ein Gaussian Splat mit  Marker erstellt. Ich würde sowas zwar gerne selbst testen, aber habe dafür leider keine Zeit mehr. Habe angefragt, das Dataset und die transforms.json zu bekommen und ein Zusage bekommen: https://www.youtube.com/watch?v=08NYHDwOqow])
+This function is important for solving a challenge of this thesis. To estimate the point on an object, a method is needed to calculate the correct density when the point is as close as possible to the obstacle.
+#figure(image("images/related_work/nerf_rays.png", width: 60%), caption: [Illustration of rays in NeRF. Casting a ray for each pixel from an image, which includes the 5D input direction $theta, phi$ and sampling points as a coordinate $x, y, z$. The direction and the coordinates are the input for the neural network, which outputs the density $sigma$ and the RGB value.])<fig:nerf_rays>
 
 === Volume Sampling in Neural Radiance Fields <volume_sampling>
 A critical component of NeRFs is the sampling strategy employed to evaluate the radiance field along camera rays. This section discusses the stratified sampling approach used in NeRFs, explaining how it selects sample points along rays, computes transmittance to detect potential object intersections, retrieves RGB and density values, and ultimately renders the scene from a chosen perspective.\
@@ -198,7 +212,7 @@ Computing the integral analytically is intractable due to the complexity of the 
 
 - #strong[Partitioning the Ray interval:] The interval $[t_n, t_f]$ is divided into $N$ evenly spaced segments (strata). Each segment corresponds to a "bin" along the ray.
 
-- #strong[Random sampling within Strata:] Within each bin, a single sample point $t_i$ is randomly selected using a uniform distribution:
+- #strong[Random sampling within strata:] Within each bin, a single sample point $t_i$ is randomly selected using a uniform distribution:
 
 $ t_i ∼ U[t_n + (i-1)/N (t_f-t_n), t_n+i/N (t_f - t_n)] $
 
@@ -254,42 +268,48 @@ where $T_i$ and $delta_i$ are as previously defined. The weights are normalized 
 == Nerfacto <nerfacto>
 After the publication of NeRF 2020, many other researches on this method have been published to improve or extend the original NeRF method. One of them is Nerfacto @tancik_nerfstudio_2023, which takes advantage of several NeRF variants. While vanilla NeRF works well when images observe the scene from a constant distance, NeRF drawings in less staged situations show notable artifacts. Due this problem Mip-NeRF @barron_mip-nerf_2021 addresses this by adopting concepts from mip mapping and enabling a scale-aware representation of the radiation field. By introducing integrated position coding, areas in space can be coded more efficiently, leading to better rendering results and more efficient processing. This helps with generating images from different distances which is more realistic for capturing images. To reduce the time for training, Nerfacto use the Insant-NGP's method @muller_instant_2022. Instead of feeding the input coordinates into the network directly (as with NeRF), the coordinates are processed using multi-resolution hash coding. Since the hash coding already captures many details, the actual MLP can be much smaller than with NeRF. The MLP is mainly used to process the features provided by the hash coding and to calculate the final values (color and density). Summarized, Nerfacto is faster and more accurate than NeRF and as the integrated NeRF variant from Nerfstudio, which I used for the implementation, it is supported and worked on.
 
-== LiDAR and NeRF
+== LiDAR Simulation <lidar-simulation>
+According to @zhang_nerf-lidar_2024, one common approach to LiDAR simulation involves creating a 3D virtual environment and rendering point clouds using physics-based simulations. This method allows for the generation of synthetic LiDAR data. However, Zhang et al. note that these virtual datasets often exhibit significant domain gaps when compared to real-world data, especially when used to train deep neural networks. The primary reason is that virtual environments cannot fully replicate the complexity and intricate details of the real world.
 
-#figure(image("images/related_work/lidar_vs_nerf.png"), caption: [Simplified illustration depicts the concept of LiDAR and the rationale behind this thesis. While a time-of-flight sensor allows light to pass through and measures the time it takes for light to travel to an obstacle and reflect back to a receiver (illustrated on the left), a NeRF does not actually cast rays within the scene. The challenge is to identify the sample point that is closest to the obstacle and compute the distance between the origin and the sample point, as the coordinates of the origin and the sample point are within the scene.])
+By using a NeRF, the physical processes of the LiDAR rays are not simulated in detail, but the underlying scene is approximated by a neural network. The universal approximation (a feedforward network with a hidden layer and a suitable activation function can approximate any mathematically defined function with arbitrary accuracy under ideal conditions @hornik_multilayer_1989 @hanin_approximating_2017) property of neural networks enables the NeRF to learn the density and radiation information of a real scene so accurately that it enables a precise representation of the scene.
 
-#text(fill: blue, [Hier werde ich etwas über LiDAR und die Idee hinter der Thesis schreiben.])
+The neural network approximates the spatial distribution of objects and surfaces in a scene and can then deduce which rays are reflected from which points and the resulting distances. Unlike traditional simulations, this approach is not based on explicit physical models, but on a data-driven reconstruction that adapts directly to the observed reality. This reduces the need to fully model the complex physical and optical interactions in the real world.
 
-// It describes optical measuring devices that use electromagnetic waves from a light source spectrum to measure the properties of objects at a distance by means of reflection and scattering.
+== Black Box <black-box>
+As NeRF is a feed-forward artificial neural network (ANN), it suffers from the disadvantage of being a black box. Interpreting how the model (a trained ANN that is used to approximate a function of interest) uses the input variables to predict the target is complicated by the complexity of ANNs @la_rocca_opening_2022. Even those who create them cannot understand how the variables are combined to produce predictions. Black box prediction models, even with a list of input variables, can be such complex functions of the variables that no human can understand how the variables work together to produce a final prediction @rudin_why_2019. To interpret NeRFs computation, which are only complex functions, as a coordinates, it is not possible to efficiently and quickly define the values while the ANN is computing. It limits the ability to understand how exactly the calculations are done and limits the understanding of the coordinates to the result. One challenge in this implementation is determining the position of a point on an obstacle, which is not feasible for exact values. To address this issue, it is essential to comprehend the underlying computation of NeRF densities. Given that NeRF is a black box, it is only possible to analyze the results, not the computation itself. This restricts the possibility to understand or manipulate for the approximation problem described in ----------------------------------.
 
-== NeRF-LiDAR <nerf-lidar>
+== Similar Work
+This section will show other studies that are working on the challenge to synthesize LiDAR sensors within a NeRF scene, and what are the uniqueness of my work.
+
+=== NeRF-LiDAR <nerf-lidar>
 #figure(image("images/nerf_lidar.png", width: 70%), caption: [The test scene in NVIDIA Omniverse (A) and the resulting point cloud as plot (B) from this application (vertical FOV: 360°, angular resolution: 0.5; horizontal FOV: 100°, angular resolution: 1.8). NeRF-LiDAR from Zhan et. al. (C) and a comparison with a real LiDAR (D).])
 
 #cite(<zhang_nerf-lidar_2024>, form: "prose") also generate LiDAR data by employing real LiDAR data to compute precise 3D geometry as a supervisory signal to facilitate the generation of more realistic point clouds and achieve good results. In contrast to the approach taken by Zhang et al., this thesis synthesizes LiDAR data without the use of additional input data for NeRF. The use of LiDAR data for training offers the advantage of improved results and a more accurate understanding of the scene under consideration. However, this approach does not fully capture the nuances of LiDAR-specific properties, such as ray drop, luminescence, or the permeability of the medium through which the light propagates. While Zhang's research offers valuable insights into specific scenes, my approach may not be as accurate but is more accessible and can be applied to any scene that a NeRF can generate..
 
 == NeRF-LOAM: Neural Implicit Representation for Large-Scale
-@deng_nerf-loam_2023 #text(fill: red, [Folgt])
+@deng_nerf-loam_2023 #text(fill: red, [Katographieren mit LiDAR daten und einem NeRF für pose und voxel])
 
-== A Probabilistic Formulation of LiDAR Mapping with Neural Radiance Fields
+=== A Probabilistic Formulation of LiDAR Mapping with Neural Radiance Fields
 @mcdermott_probabilistic_2024 #text(fill: red, [Folgt])
 
-== SHINE-Mapping
+=== SHINE-Mapping
 @zhong_shine-mapping_2023 #text(fill: red, [Folgt])
 
-== PIN-SLAM
+=== PIN-SLAM
 @pan_pin-slam_2024 #text(fill: red, [Folgt])
-
 #pagebreak()
 
 = Tools <tools>
+This chapter explains Nerfstudio and NVIDIA Omniverse and why I used them for my thesis.
+
 == Nerfstudio <nerfstudio>
 Nerfstudio is a PyTorch framework. It contains plug-and-play components for implementing NeRFs. It uses tools for real-time visualization and introduces how to work with and implement NeRFs @tancik_nerfstudio_2023. Nerfstudio is used for using and editing Nerfacto and rendering the scene on the front-end. While Nerfstudio's common use is to implement new NeRFs, this work use a modified version of Nerfacto.
 
 == NVIDIA Omniverse <nvidia-omniverse>
-Since the computation from distance in a NeRF depends on the camera parameters, it is easier to use graphical software where the camera values and position can be set and extracted in a virtual environment. For NeRF, it is not necessary to use real images, but for the comparison with a real LiDAR, software is needed that can simulate a LiDAR sensor. One tool that embeds and certifies LiDAR sensors, such as the Sick PicoScan 150, is NVIDIA Omniverse. \
-NVIDIA Omniverse is powered by NVIDIA RTX and is a modular development platform of APIs and micro services for creating 3D applications, services and to break down data silos, link teams in real time, and produce physically realistic world-scale simulations with tools like Isaac Sim @nvidia_nvidia_nodate. NVIDIA Omniverse use Universal Scene Description (USD). \
-Large amounts of 3D data, are generated, stored, and transmitted by pipelines that can produce computer graphics for movies and video games. Modeling, shading, animation, lighting, effects, and rendering are just a few of the many collaborating applications in the pipeline. Each one has a unique scene description that is suited to its own workflows and needs. USD is the first software that deals with exchanging and supplementing any 3D scenes @pixar_openusd_nodate.
+Since the computation from distance in a NeRF depends on the camera parameters, it is easier to use graphical software where the camera values and position can be set and extracted in a virtual environment. For NeRF, it is not necessary to use real images, but for the comparison with a real LiDAR, software is needed that can simulate a LiDAR sensor. One tool that embeds and LiDAR sensors, such as the Sick PicoScan 150, is NVIDIA Omniverse. \
+NVIDIA Omniverse is powered by NVIDIA RTX and is a modular development platform of APIs and micro services for creating 3D applications, services and to break down data silos, link teams in real time, and produce physically realistic world-scale simulations with tools like Isaac Sim @nvidia_nvidia_nodate.
 #pagebreak()
+
 = Implementation <implementation>
 The objective of this project is to establish an origin within a NeRF scene representation and utilize this origin for distance measurement. To achieve this, the implementation requires a frontend for setting the origin and resolutions, visualizing the scene, and parsing the data within the scene representation. Nerfstudio is employed for this implementation (see @nerfstudio).
 
@@ -311,7 +331,7 @@ In order to obtain a point cloud within the scene or as a plot, it is necessary 
 == Backend <backend>
 #text(fill:blue, [Beim Backend bin ich mir sehr unschlüssig. Nerfstudio selbst benutzt ein unübersichtliches Backend bei dem ich mir nicht sicher bin, ob ich da im Detail oder auch nur grob darauf eingehen soll. Ich habe tatsächlich selten eine Software gesehen die so inkonsistent geschrieben wurde. Auf der anderen Seite ist die Arbeit am Code, das was ich die letzten Monate gemacht habe (auch das Backend zu verstehen), und irgendwie würde ich das auch gerne beschreiben und würdigen. Auf den Algroithmus gehe ich aber weiter unten ein. Ein Flowchart wäre hier aber sehr unspannend weil eigentlich nur von Methode zu Methode springt. Vermutlich werde ich versuchen den mehr spannenden Teil, der vor allem mit meine Arbeit zu tun hat, darzustellen ohne auf alles einzugehen.])
 // The main part of the backend is to parse the given data from the frontend and compute the density values which are then send back to the frontend. The data from the frontend are the exact position $(x , y , z)$ from the frustum and its orientation $(theta , phi.alt)$ in the scene. Due the complexity of Nerfstudio it is relevant to show the process to compute the densities more detailed. \
-// After clicking on a button to create a point cloud
+// After clicking on a button to create a point cloudh
 
 == Scene recognition
 NeRF as an artificial neural network learns from differences within images. These differences can be in terms of color, texture, shape, or lighting variations. When a scene contains homogeneous areas—regions with uniform color and texture—NeRF faces challenges in accurately reconstructing these areas spatially.\
@@ -507,42 +527,59 @@ An important question is whether it is possible to simulate the distance as accu
 it should be mentioned, that the color is not directly responsible for the density value. It is the accuracy itself, because the density value increases greatly on the positions where the ray is in front of, on, or inside an obstacle. That the object was sometimes recognized better and sometimes worse.\
 #text(fill: blue, [Das ist vermutlich zu ungenau beschrieben und kaum belegbar. Die Farbe ist natürlich wichtig für das Erkennen der Szene. Was ich meinte, ist, dass die die Gründe eher darin liegen wie gut die Szene erkannt wurde. Das sollte ich nochmal überarbeiten.])
 
-== Not used methods <methods>
+== Methods
+
+The employment of multiple lasers facilitates the generation of a point cloud representation of the surrounding environment. These sensors are specifically designed for real-time applications. However, the utilization of a NeRF to synthesize data in real-time remains a challenge. The computation of distance between two points within a NeRF scene an generating a point cloud necessitates the completion of several steps.
+#v(2mm) 
+#strong[Determine the points:] This represents a significant challenge with regard to implementation. In other graphical software, such as Unity, NVIDIA Omniverse, and Blender, the coordinates of each edge, vertex, or face are explicitly defined. However, in NeRF, these coordinates are not known. To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation. This is referred to as the loss function. This discrepancy in scale and coordinates between the original scene and the NeRF scene presents a challenge. Although this implementation assumed that the local origin in the global scene could be set manually with a visible object within the scene that is movable in runtime, the primary issue lies in determining the appropriate distance between this local origin and each potential obstacle that a ray might encounter. As in @volume_sampling described, the density value increases close to an obstacle. To address this issue, multiple methods are developed and tested to estimate the sample point closest to the obstacle by recognize the increasing density value.
+#v(2mm)
+#strong[Casting rays:] Once the origin within the scene has been established, rays must be cast in order to obtain the requisite distance measurement and point cloud reflection. The rays should be dependent on the local origin and not on the scene perspective, which are typically employed in NeRF for scene representation.
+#v(2mm)
+#strong[Distance measurement:] To measure the distance between two points, the Pythagorean theorem is applied. A key challenge, however, lies in the fact that the scale within the scene does not correspond accurately to that of the original scene, particularly when camera parameters are estimated rather than precisely known during training.
+#v(2mm)
+#figure(image("images/related_work/lidar_vs_nerf.png"), caption: [Simplified illustration depicts the concept of LiDAR and the rationale behind this thesis. While a time-of-flight sensor allows light to pass through and measures the time it takes for light to travel to an obstacle and reflect back to a receiver (illustrated on the left), a NeRF does not actually cast rays within the scene. The challenge is to identify the sample point that is closest to the obstacle and compute the distance between the origin and the sample point, as the coordinates of the origin and the sample point are within the scene.])
+
+As illustrated in @fig:impicit it is challenging to obtain the requisite coordination to measure the distance between the two points. While the distance can be readily calculated in NVIDIA Omniverse due to the availability of known coordinates, the coordinates in a NeRF scene are dependent on the original images and their associated parameters. It is feasible to approximate the same coordinates as in NVIDIA Omniverse. However, due to the issue of infinite points in space and the lack of knowledge regarding the coordinate of each object within the scene, it is not possible to obtain the exact coordinates, which represents a significant challenge in the implementation of this approach with LiDAR sensors, which are highly precise. Nevertheless, even when it would be feasible to obtain the exact positions, the distance would not be accurate, given that the NeRF scene lacks any references regarding scale. This understanding also depends on the camera parameters. Another Problem is to obtain the closest point on an obstacle. A NeRF approximates the original scene by approximates the RGB and density values. These values are not exact representations of the scene. In the real world or in graphical software, it is possible to use a pen or click on an object because its coordinates are known and defined. However, in a NeRF, every pixel is only an approximation of an RGB value, influenced by the density value depending from images. This means that it is not possible to take a pen and mark a specific point, because the exact position and properties of that point are not explicitly defined in the model. \
+
+#figure(image("images/introduction/implicite.png", width: 100%), caption: [Comparison between implicit and explicit coordinates in NVIDIA Omniverse and a NeRF scene representation. The use of NVIDIA Omniverse to calculate the distance between two known points in a 3D scene using the Pythagorean theorem (A). The coordinates as user input: $x'_a , y'_a , z'_a$ for the neural network $f_theta$ which interprets these coordinates by computing pixels in the space it learns from training (B). Illustration of the problem of getting a point closest to an obstacle in NeRF (C).#text(fill:blue, [Ich suche immer noch nach einer besseren Darstellung für das rechte Bild. Es wird nicht ganz klar, was das Problem darstellt.])])<fig:impicit>
+
+=== Not used methods <methods>
+#text(fill:blue, [Alle Abschnitte dieses Kapitels müssen noch einmal überarbeitet und kontrolliert werden. Vor Allem das "In this method" ist sehr nervig.])\
 This section shows the methods for estimating the sample point closest to an obstacle. For this purpose, all rays thrown are analyzed and several methods are tested. The rays themselves are not modified.
 
 To simulate a NeRF scene, an origin in the scene is required, which can be added as a frustum within the scene. Depending on user input, this frustum simulates a ray within the scene and obtains the density values along a ray.
 
 The core idea is to estimate the density sample point $sigma$ at the position $x$ closest to the obstacle where the ray intersects, and then calculate the distance between the origin and this estimated point. Several methods are used and tested for this estimation.
 
-=== Threshold method <simple-threshold-method>
+==== Threshold method <simple-threshold-method>
 For each ray, I sample the volume densities $sigma(x)$ at discrete points along the ray path. By defining a threshold $sigma_(t h)$, which determines the density above which a relevant interaction is assumed, the algorithm searches for the first position $x_(t h)$ where $sigma(x_(t j)) gt.eq sigma_(t h)$. This corresponding position $x_(t h)$ is then used to determine the distance to the object. \
 
 While this method is commonly used for testing, it has two problems. First, the use of a threshold itself. Even though the use of a threshold is necessary in any method, it is a goal of this work that the user can use this implementation without defining a threshold because of the second problem: the definition of the threshold. As I mentioned before, the density value closest to the obstacle is arbitrary and different from ray to ray and scene to scene. Even a ray at the same position will give different values. While the test results are good with known distance, it requires the distance to calibrate $sigma_(t h)$, which makes it useless.
 
-=== Difference method
+==== Difference method
 his method focuses on the increases in density along a ray. If $abs(Delta sigma) gt.eq Delta_(t h) $, where $Delta sigma = sigma_i minus sigma_(i-1)$ and $Delta_(t h)$ represents a threshold, then $sigma_i$ corresponding position $x_i$ is used for the distance calculation.
 
 This method is similar to the first one, but the threshold should not be set by the user. As demonstrated by @single-ray, the density value of the required density closest to the obstacle will vary from ray to ray, even if the origin and direction of the ray are the same. While the first method sets an absolute threshold that is independent of each ray, the focus on increasing each density makes each ray independent of other rays. Since the densities are too different, this method suffers from the same problem as the first method, but with better results and usable without threshold calibration.
 
-=== Z-Score method
+==== Z-Score method
 In this method, I use the z-score to standardize the density values along each ray and identify points where the density deviates significantly from the mean. For each ray, I calculate the mean $mu$ and the standard deviation $s$ of the density values ${sigma_i}$. The z-score for each density value is calculated as:
 $z_i = (sigma_i - mu) / s$
 
-=== Standardized method
+==== Standardized method
 In this method, I standardize the volume densities along each ray to account for global variations. First, I compute the global mean $μ$ and the global standard deviation $s$ of all volume densities across all rays. For each ray, I standardize the density values $σ_i$ along the ray using $accent(σ, ~)_i=(σ_i -μ)/s$.
 
 Then I defined a threshold $Delta_(t h)$ that determines when a density is considered significant. Search the standardized density values along the ray and identify the first point $x_(i∗)$ at which $accent(σ, ~)_(i∗) gt.eq Δ_(t h)$ holds. This position is used to calculate the distance to the object.
 
-=== Accumulate method
+==== Accumulate method
 In this method, the volume densities $σ_i$ accumulate along each ray until the cumulative density reaches or exceeds a predefined threshold $Sigma_(t h)$. For each sample point $x_i$ along the ray, the cumulative density $S_i =Sigma_(k=1)^i σ_k$ is calculated. The first point $x_(i∗)$ where $S_i gt.eq Sigma_(t h)$ is found. This position is used to calculate the distance to the object.
 
 === Maximum density change
 This method calculates the absolute density changes between successive sample points along each ray. Let $σ_i$ be the volume density at point $x_i$. The density change between points $x_(i-1)$ and $x_i$ is calculated as $Delta_(sigma_i) = abs(sigma_i -sigma_i -1)$. The index $i^∗$ at which the density change $Delta_(sigma_i)$ is maximized is determined: $i^∗ = arg max Delta_(σ_i)$. The corresponding position $x_(i^∗)$ is assumed to be the position where the ray hits the object, and the distance is calculated.
 
-=== Average density change
+==== Average density change
 Compared to the previous method, where I identified the point along the ray with the maximum density change between consecutive samples, this method similarly calculates the absolute density differences between consecutive points along each ray. However, instead of relying solely on the maximum density change, I calculate the average density difference $accent(Delta_sigma, -)$ over the entire ray. I then define a dynamic threshold $Delta_(t h) = k * accent(Delta_sigma, -)$, where $k$ is a scaling factor.
 
-== Main method
+=== Used method
 Once the frustum has been positioned with respect to the origin and direction, the vertical and horizontal angular resolution has been obtained, and the button has been pressed to generate the point cloud within the scene, a Nerfstudio camera object will be created. Furthermore, all densities and locations along each ray will be saved in a list.
 It should be noted that transmittance along a ray is defined in Nerfstudio as:
 $ T(t) = exp(- integral_(t_n)^t sigma (r (s)) d s) $ Where $sigma (r (s))$ is the volume density along the ray depending on the position $r (s)$ on ray $r (t) = o + t d$.
