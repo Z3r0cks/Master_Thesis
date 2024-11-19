@@ -218,7 +218,7 @@ This function is important for solving a challenge of this thesis. To estimate t
 #figure(image("images/related_work/nerf_rays.png", width: 60%), caption: [Illustration of rays in NeRF. Casting a ray for each pixel from an image, which includes the 5D input direction $theta, phi$ and sampling points as a coordinate $x, y, z$. The direction and the coordinates are the input for the neural network, which outputs the density $sigma$ and the RGB value.])<fig:nerf_rays>
 
 === Volume Sampling in Neural Radiance Fields <volume_sampling>
-A critical component of NeRFs is the sampling strategy employed to evaluate the radiance field along camera rays. This section discusses the stratified sampling approach used in NeRFs, explaining how it selects sample points along rays, computes transmittance to detect potential object intersections, retrieves RGB and density values, and ultimately renders the scene from a chosen perspective.\
+A critical component of NeRFs is the sampling strategy employed to evaluate the radiance field along camera rays. This section discusses the stratified sampling approach used in NeRFs, explaining how it selects sample points along rays, computes transmittance to detect potential object intersections, retrieves RGB and density values, and ultimately renders the scene from a chosen perspective. This section is important for the understanding how NeRF renders the scene and set the sampling points along a ray. Which is needed to approximate a point closest to an obstacle. \
 #v(3mm)
 #strong[Stratified Sampling in NeRFs]
 
@@ -298,10 +298,10 @@ According to @zhang_nerf-lidar_2024, one common approach to LiDAR simulation inv
 
 By using a NeRF, the physical processes of the LiDAR rays are not simulated in detail, but the underlying scene is approximated by a neural network. The universal approximation (a feedforward network with a hidden layer and a suitable activation function can approximate any mathematically defined function with arbitrary accuracy under ideal conditions @hornik_multilayer_1989 @hanin_approximating_2017) property of neural networks enables the NeRF to learn the density and radiation information of a real scene so accurately that it enables a precise representation of the scene.
 
-The neural network approximates the spatial distribution of objects and surfaces in a scene and can then deduce which rays are reflected from which points and the resulting distances. Unlike traditional simulations, this approach is not based on explicit physical models, but on a data-driven reconstruction that adapts directly to the observed reality. This reduces the need to fully model the complex physical and optical interactions in the real world.
+The neural network approximates the spatial distribution of objects and surfaces in a scene and can then deduce which rays are reflected from which points and the resulting distances. Unlike other simulations, this approach is not based on explicit physical models, but on a data-driven reconstruction that adapts directly to the observed reality. This reduces the need to fully model the complex physical and optical interactions in the real world.
 
 == Black Box <black-box>
-As NeRF is a feed-forward artificial neural network (ANN), it suffers from the disadvantage of being a black box. Interpreting how the model (a trained ANN that is used to approximate a function of interest) uses the input variables to predict the target is complicated by the complexity of ANNs @la_rocca_opening_2022. Even those who create them cannot understand how the variables are combined to produce predictions. Black box prediction models, even with a list of input variables, can be such complex functions of the variables that no human can understand how the variables work together to produce a final prediction @rudin_why_2019. To interpret NeRFs computation, which are only complex functions, as a coordinates, it is not possible to efficiently and quickly define the values while the ANN is computing. It limits the ability to understand how exactly the calculations are done and limits the understanding of the coordinates to the result. One challenge in this implementation is determining the position of a point on an obstacle, which is not feasible for exact values. To address this issue, it is essential to comprehend the underlying computation of NeRF densities. Given that NeRF is a black box, it is only possible to analyze the results, not the computation itself. This restricts the possibility to understand or manipulate for the approximation problem described in ----------------------------------.
+As NeRF is a feed-forward artificial neural network (ANN), it suffers from the disadvantage of being a black box. Interpreting how the model (a trained ANN that is used to approximate a function of interest) uses the input variables to predict the target is complicated by the complexity of ANNs @la_rocca_opening_2022. Even those who create them cannot understand how the variables are combined to produce predictions. Black box prediction models, even with a list of input variables, can be such complex functions of the variables that no human can understand how the variables work together to produce a final prediction @rudin_why_2019. To interpret NeRFs computation, which are only complex functions, as a coordinates, it is not possible to efficiently and quickly define the values while the ANN is computing. It limits the ability to understand how exactly the calculations are done and limits the understanding of the coordinates to the result. One challenge in this implementation is determining the position of a point on an obstacle, which is not feasible for exact values. To address this issue, it is essential to comprehend the underlying computation of NeRF densities. Given that NeRF is a black box, it is only possible to analyze the results, not the computation itself. This restricts the possibility to understand or manipulate for the approximation problem.
 
 == Similar Work
 This section will show other studies that are working on the challenge to synthesize LiDAR sensors within a NeRF scene, and what are the uniqueness of my work.
@@ -309,7 +309,7 @@ This section will show other studies that are working on the challenge to synthe
 === NeRF-LiDAR <nerf-lidar>
 #figure(image("images/nerf_lidar.png", width: 70%), caption: [The test scene in NVIDIA Omniverse (A) and the resulting point cloud as plot (B) from this application (vertical FOV: 360°, angular resolution: 0.5; horizontal FOV: 100°, angular resolution: 1.8). NeRF-LiDAR from Zhan et. al. (C) and a comparison with a real LiDAR (D).])
 
-#cite(<zhang_nerf-lidar_2024>, form: "prose") also generate LiDAR data by employing real LiDAR data to compute precise 3D geometry as a supervisory signal to facilitate the generation of more realistic point clouds and achieve good results. In contrast to the approach taken by Zhang et al., this thesis synthesizes LiDAR data without the use of additional input data for NeRF. The use of LiDAR data for training offers the advantage of improved results and a more accurate understanding of the scene under consideration. However, this approach does not fully capture the nuances of LiDAR-specific properties, such as ray drop, luminescence, or the permeability of the medium through which the light propagates. While Zhang's research offers valuable insights into specific scenes, my approach may not be as accurate but is more accessible and can be applied to any scene that a NeRF can generate..
+#cite(<zhang_nerf-lidar_2024>, form: "prose") also generate LiDAR data by employing real LiDAR data to compute precise 3D geometry as a supervisory signal to facilitate the generation of more realistic point clouds and achieve good results. In contrast to the approach taken by Zhang et al., this thesis synthesizes LiDAR data without the use of additional input data for NeRF. The use of LiDAR data for training offers the advantage of improved results and a more accurate understanding of the scene under consideration. However, this approach does not fully capture the nuances of LiDAR-specific properties, such as ray drop, luminescence, or the permeability of the medium through which the light propagates. While Zhang's research offers valuable insights into specific scenes, my approach may not be as accurate but is more accessible and can be applied to any scene that a NeRF can generate.
 
 == NeRF-LOAM: Neural Implicit Representation for Large-Scale
 @deng_nerf-loam_2023 #text(fill: red, [Katographieren mit LiDAR daten und einem NeRF für pose und voxel])
@@ -325,7 +325,7 @@ This section will show other studies that are working on the challenge to synthe
 #pagebreak()
 
 = Tools <tools>
-This chapter explains Nerfstudio and NVIDIA Omniverse and why I used them for my thesis.
+This chapter explains Nerfstudio and NVIDIA Omniverse and why I used them for this thesis.
 
 == Nerfstudio <nerfstudio>
 Nerfstudio is a PyTorch framework. It contains plug-and-play components for implementing NeRFs. It uses tools for real-time visualization and introduces how to work with and implement NeRFs @tancik_nerfstudio_2023. Nerfstudio is used for using and editing Nerfacto and rendering the scene on the front-end. While Nerfstudio's common use is to implement new NeRFs, this work use a modified version of Nerfacto.
@@ -336,9 +336,66 @@ NVIDIA Omniverse is powered by NVIDIA RTX and is a modular development platform 
 #pagebreak()
 
 = Implementation <implementation>
-The objective of this project is to establish an origin within a NeRF scene representation and utilize this origin for distance measurement. To achieve this, the implementation requires a frontend for setting the origin and resolutions, visualizing the scene, and parsing the data within the scene representation. Nerfstudio is employed for this implementation (see @nerfstudio).
+The goal of this project is to define an origin within a NeRF scene representation and utilize it for distance measurement and point cloud generation within the scene. To achieve this, the implementation involves several steps, which are detailed in the following chapter:
 
-#figure(image("images/implementation/first_shadow.png", width: 100%), caption: [Activity diagram for the implementation (illustration by author).])<act_dig1>
+- Environment Setup
+- Scene Capture
+- Parameter Creation
+- Training
+- Frustum Configuration
+- Distance Measurement, Plotting, and Point Cloud Creation
+
+Used Hardware:
+
+#table(
+  columns: 2,
+  stroke: none,
+  [GPU], [NVIDIA GeForce RTX 4060 Ti (16GB VRAM)],
+  [CPU], [Intel i5 13500 with 14 cores, 20 threads and 4.8 GHz],
+  [RAM], [128GB],
+  [OS], [Windows 11]
+)
+
+To set up the installation, an Anaconda environment is created with the necessary dependencies. These include Python version 3.8 or higher, Visual Studio 2022 for the C++ Build Tools, and CUDA (Compute Unified Device Architecture) from NVIDIA, which enables developers to write programs that execute threads in parallel on the GPU. Additionally, the tiny-cuda-nn library is used for training and inference of small neural networks on NVIDIA GPUs using CUDA. The torchvision library, part of the PyTorch framework specifically designed for computer vision tasks, is also included. It offers a collection of pre-trained models, data processing functions, dataset classes, and utility functions to simplify working with images.
+
+== Scene Capturing
+For the scene capturing, multiple images from the scene are required. Each important part of the scene should be captured multiple times from different angles, positions and heights. The use of a large depth of field (small aperture) is recommended to ensure that all parts of the image are in focus. Motion blur and depth of field can lead to errors in the reconstruction and should be avoided. Consistent lighting conditions in all shots are important, as changing lighting can confuse the model and lead to inconsistencies.
+
+== Parameter creating
+As mentioned in @positioning, the intrinsic and extrinsic camera parameter are required and important for this implementation. Obtaining the camera poses direct without pose estimation are recommended. In this case, a transforms.json has to be create for the training with the json format:  
+
+#pseudocode-list()[
+  + "w": image_width,
+  + "h": image_height,
+  + "fl_x": focal_length_x,
+  + "fl_y": focal_length_y,
+  + "cy": principal_point_x,
+  + "cy": principal_point_y,
+  + "k1": radial_distortion_coefficient_1,
+  + "k2": radial_distortion_coefficient_2,
+  + "p1": tangential_distortion_coefficient_1,
+  + "p2": tangential_distortion_coefficient_2,
+  + "camera_model": e.g OPENCV or PINEHOLE
+  + "frames": [
+    + {
+      + "file_path": path to image 1,
+      + "transform_matrix": [
+        + [r11, r12, r13, px],
+        + [r21, r22, r13, py],
+        + [r11, r12, r13, pz],
+        + [0, 0, 0, 1],
+    + },{
+      + file_path: path to image 2,
+      + ...
+  ]
+
+== Training
+The training can start with images and a transforms.json for camera paramter with the CLI command #emph[]
+This implementation focus on using Nerfacto with Nerfstudio. Nerfstudio has multiple types of Nerfacto variant which are needs different time to create the scene. The training for the lowest Nerfactor for my scenes needs approximately 15 to 20 minutes depending how many images are used. For the Nerfacto-Big, the second largest Model, the time increased to approximately 4 hours to 5 hours and the largest model (Nerfacto-huge) needs 7 hours to 9 hours to train the scene.
+
+// The objective of this project is to establish an origin within a NeRF scene representation and utilize this origin for distance measurement and point cloud creation within the scene. To achieve this, the implementation requires a frontend for setting the origin and resolutions, visualizing the scene, and parsing the data within the scene representation. Nerfstudio is employed for this implementation (see @nerfstudio).
+
+#figure(image("images/implementation/first_shadow.png", width: 100%), caption: [Activity diagram how distance measuring and point cloud creating are execute in this implementation.])<act_dig1>
 
 The principal process is illustrated in @act_dig1. Once the model has been trained, the Nerfstudio 3D visualization (Viser) with LiDAR environment can be initiated with the CLI command #strong[#emph[ns-view-lidar]] and standard Nerfstudio flags. This action opens the frontend, which allows the user to add and position a frustum within the scene. Upon clicking the button in the frontend, a Nerfstudio camera object is generated, and a resolution is established in the backend. This process entails the computation of the specified densities and their subsequent transmission to the frontend.
 
