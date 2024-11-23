@@ -95,19 +95,19 @@
 #place(
   dy: 25pt,
       table(
-          columns: 2,
-          stroke: none,
-          align: left,
-          inset: 6pt,
-          text([Degree course:], size: title_size), text([Computer Science in Media, Master], size: title_size),
-          text([Matriculation number:], size: title_size), text([272509], size: title_size),
-          [],[],
-          [],[],
-          [],[],
-          text([University supervisor:], size: title_size), text([Prof. Dr. Uwe Hahne], size: title_size),
-          text([External supervisor:], size: title_size), text([Dr. Jakob Lindinger], size: title_size),
-          text([submitted], size: title_size), text([30.11.2024], size: title_size),
-  )
+        columns: 2,
+        stroke: none,
+        align: left,
+        inset: 6pt,
+        text([Degree course:], size: title_size), text([Computer Science in Media, Master], size: title_size),
+        text([Matriculation number:], size: title_size), text([272509], size: title_size),
+        [],[],
+        [],[],
+        [],[],
+        text([University supervisor:], size: title_size), text([Prof. Dr. Uwe Hahne], size: title_size),
+        text([External supervisor:], size: title_size), text([Dr. Jakob Lindinger], size: title_size),
+        text([submitted], size: title_size), text([30.11.2024], size: title_size),
+    )
 )
 
 #pagebreak()
@@ -129,7 +129,6 @@
 #counter(page).update(1)
 
 #context counter(heading).update(0)
-// #pagebreak()
 #set page(footer: auto)
 
 = Introduction <introduction>
@@ -140,7 +139,7 @@ This thesis explores whether a synthetic LiDAR sensor can be generated within a 
 
 Industrial applications can be dangerous. The use of inappropriate sensors can cause injuries or worse. Testing potential sensors in a virtual environment, such as a NeRF, is safer and more efficient than experimenting with real sensors. Therefore, developing a method to simulate LiDAR sensors within NeRFs could significantly aid in selecting the correct sensors for specific applications. To understand how a LiDAR sensor can be simulated within a NeRF, it is essential to delve into the principles of distance measurement and the role of constants like the velocity of light. 
 
-An important area for sensors is measuring, especially distance measuring. In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. One such fundamental physical constant is the velocity of light, which can be used to calculate the distance between two points in space by determining the time required for light to travel between them. This concept forms the basis of the measurement principle known as "time-of-flight" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). One prominent example of a time-of-flight sensor is Light Detection and Ranging (LiDAR). They are different types of LiDAR. One type of LiDAR–which is the focus of this study—is the use of lasers that are directed at an object and then measure time it takes for the reflected light to return to the receiver, allowing it to generate a 3D or 2D image with spatial and depth data @noauthor_sick-lidar_nodate. It is difficult to estimate which LiDAR could be correct for each given application, highlighting the need for effective simulation methods. By focusing on simulating LiDAR sensors within a NeRF, this thesis aims to provide a tool for assessing the suitability of various LiDAR technologies in a controlled virtual environment only with images from the scene.
+An important area for sensors is measuring, especially distance measuring. In order to facilitate measurement, it is necessary to employ a constant value that is universally applicable and accessible to all. One such fundamental physical constant is the velocity of light, which can be used to calculate the distance between two points in space by determining the time required for light to travel between them. This concept forms the basis of the measurement principle known as "time-of-flight" (ToF) #cite(<hahne_real-time_2012>, supplement: [p.~11]). One prominent example of a time-of-flight sensor is Light Detection and Ranging (LiDAR). They are different types of LiDAR. One type of LiDAR–which is the focus of this study—is the use of lasers that are directed at an object or scene and then measure time it takes for the reflected light to return to the receiver, allowing it to generate a 3D or 2D image with spatial and depth data @noauthor_sick-lidar_nodate. It is difficult to estimate which LiDAR could be correct for each given application, highlighting the need for effective simulation methods. By focusing on simulating LiDAR sensors within a NeRF, this thesis aims to provide a tool for assessing the suitability of various LiDAR technologies in a controlled virtual environment only with images from the scene.
 
 This approach could offer significant advantages in terms of safety, cost, and efficiency when determining the most appropriate sensor for specific industrial applications. To effectively simulate LiDAR sensors in a virtual environment, advanced methods for 3D scene representation are required.
 
@@ -149,17 +148,29 @@ It is difficult to measure the real world. Cameras can help, but they only show 
 In 2020, #cite(<mildenhall_nerf_2020>, form: "author") introduced NeRF as an AI-based approach for generating 3D representations of scenes from 2D images. One of the key advantages by using NeRF is the low memory usage and the photo-realistic representation. With the use of pipelines, it is also easy to use NeRFs, even for untrained users @schleise_automated_2024. The central idea behind NeRF is to utilize a neural network, rather than techniques that use a grid or a list system to determinate each point and its corresponding values within a 3D scene.
 #right_sign
 Like other neural networks, NeRF suffers from the disadvantage of being a "black box" @la_rocca_opening_2022. This makes it difficult or even impossible to fully understand the computations taking place, as the neural network provides limited interpretability. As a result, it is challenging to determine positions, distances, or lengths within the scene. Unlike methods, which typically store scene data in grids or lists, where each pixel within the scene is explicit know, NeRF only compute RGB and density values from given coordinates. Depending on the method which the neural network is trained, the distances and coordinates from the original scene are unknown.\
+To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation.
 
-In other graphical software, such as Unity, NVIDIA Omniverse, and Blender, the coordinates of each edge, vertex, or face are explicitly defined. However, in NeRF, these coordinates are not known. To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation.
+#figure(image("images/related_work/lidar_vs_nerf.png"), caption: [Simplified illustration depicts the concept of LiDAR and the rationale behind this thesis. While a time-of-flight sensor allows light to pass through and measures the time it takes for light to travel to an obstacle and reflect back to a receiver (illustrated on the left), a NeRF does not actually cast rays within the scene. The challenge is to identify the sample point that is closest to the obstacle and compute the distance between the origin and the sample point, as the coordinates of the origin and the sample point are within the scene.])
+The employment of multiple lasers facilitates the generation of a point cloud representation of the surrounding environment. These sensors are specifically designed for real-time applications. However, the utilization of a NeRF to synthesize data in real-time remains a challenge and is currently not possible. The computation of distance between two points within a NeRF scene an generating a point cloud necessitates the completion of several steps.
+#v(2mm)
+#strong[Determine the points:] This represents a significant challenge with regard to implementation. As mentioned, in NeRF are the coordinates and scale are implicit. This discrepancy in scale and coordinates between the original scene and the NeRF scene presents a challenge. Although this implementation assumed that the local origin in the global scene could be set manually with a visible object within the scene that is movable in runtime. The primary issue lies in determining the appropriate distance between this local origin and each potential obstacle that a ray might encounter. As in @volume_sampling described, the density value increases close to an obstacle. To address this issue, multiple methods are developed and tested to estimate the sample point closest to the obstacle by recognize the increasing density value.
+#v(2mm)
+#strong[Casting rays:] Once the origin within the scene has been established, rays must be cast in order to obtain the requisite distance measurement and point cloud reflection. The rays should be dependent on the local origin and not on the scene perspective, which are typically employed in NeRF for scene representation.
+#v(2mm)
+#strong[Distance measurement:] To measure the distance between two points, the Pythagorean theorem is applied. A key challenge, however, lies in the fact that the scale within the scene does not correspond accurately to that of the original scene, particularly when camera parameters are estimated rather than precisely known during training. Due this issue, a reference object within the scene can used for scale calibration.
+#v(2mm)
 
-This implementation can be employed for the purpose of measuring distances within a given scene, in a manner analogous to that of an artificial LiDAR. Additionally, it can be utilized for the precise measurement of distances between two points within the scene. Furthermore, the implementation allows for the use of a reference object within the scene, which is used to compute a scale factor that is then applied to the measured distances. This method also can used to mapping closed areas like an LiDAR sensor. \
+This implementation can be employed for the purpose of measuring distances within a given scene, in a manner analogous to that of an artificial LiDAR. Additionally, it can be utilized for the precise measurement of distances between two points within the scene. Furthermore, the implementation allows for the use of a reference object within the scene, which is used to compute a scale factor that is then applied to the measured distances. This method also can used to mapping closed areas. \
+#v(2mm)
 In order to implement the method, a technique is employed which enables the detection of the density value at a given point within the scene, as well as the calculation of the distance between the origin and the points. NVIDIA Omniverse is utilized for the generation of images, the management of camera parameters and as a means of comparison with a simulated LiDAR. Meanwhile, Nerfstudio with Nerfacto is employed for the creation of the NeRF and the implementation of the proposed methods.
+#pagebreak()
 #pagebreak()
 
 = Related Work <related-work>
-To understand the implementation and the associated challenges, this chapter provides a deeper dive into the fundamental principles of Neural Radiance Fields (NeRF). Additionally, it highlights similar works that combine NeRF with LiDAR systems, offering a comprehensive context for the methods and contributions discussed later in this thesis.
+To understand the implementation and the associated challenges, this chapter provides a deeper dive into the fundamental principles of Neural Radiance Fields (NeRF). Additionally, it highlights similar works that combine NeRF with LiDAR systems, offering a comprehensive context for the methods and contributions discussed later in this thesis
 
 == Neural Radiance Fields <neural-radiance-fields>
+
 #cite(<mildenhall_nerf_2020>, form: "author") present a method for generating an AI-based 3D scene representation called Neural Radiance Fields (NeRF). The key idea behind NeRF is to synthesize novel views from limited input. The advantage of using a neural network is that it requires less memory than techniques that use lists and produces photo-realistic results. The main component is a neural network $F theta$, implemented as a multilayer perceptron (MLP), which is trained using the positions and directions (perspectives of pixel in an images) from input images to approximate RGB values and compute the density $sigma$ at a given point in the scene. The density and RGB values are then used to generate a 3D scene through volumetric rendering.
 #v(3mm)
 #figure(image("images/nerf_image_mildenhall_1.png", width: 85%), caption: [Overview of the NeRF scene representation. Sampling the 5D input location and direction $x, y, z, theta, phi$ (a) to feed the neural network (b). Then using volumetric rendering techniques to render the scene (c) and optimizing the scene with backpropagation since volumetric rendering
@@ -205,7 +216,11 @@ Colmap is used for pose estimation with structure from motion (SfM). Since Struc
 #v(4mm)
 
 #strong[Pose Estimation with Marker]\
-Using marker for pose estimation 
+Using marker for pose estimation has the benefit of knowing the scale and the camera positions within the scene. For testing it, an dataset from Simon Bethke are used. He produce a tutorial (Title: Tutorial - Gaussian Splatting, Platform: YouTube, Channel: Simon Bethke) and uses AprilTag Scale Markers for pose estimation. On the other hand, it is a higher effort to use these markers within the scene. By using this markers, distance measuring is also possible without reference object.
+
+#figure(
+  image("images/introduction/pose_marker.png", width: 50%), caption: [A AprilTag Scale Marker within the garage scene from Simon Bethke.The distance in this scene are 0.0704m The correct size of this markers are 7x7cm.]
+)
 
 === Neural Network Architecture <neural-network-architecture>
 The MLP consists of nine fully connected layers: eight layers with 256 neurons each and one with 128 neurons. It uses the #emph[Rectified Linear Unit] (ReLU) as the activation function, a non-linear function that leaves positive inputs unchanged while setting negative inputs to zero.
@@ -334,12 +349,15 @@ Nerfstudio is a PyTorch framework. It contains plug-and-play components for impl
 == NVIDIA Omniverse <nvidia-omniverse>
 Since the computation from distance in a NeRF depends on the camera parameters, it is easier to use graphical software where the camera values and position can be set and extracted in a virtual environment. For NeRF, it is not necessary to use real images, but for the comparison with a real LiDAR, software is needed that can simulate a LiDAR sensor. One tool that embeds and LiDAR sensors, such as the Sick PicoScan 150, is NVIDIA Omniverse. \
 NVIDIA Omniverse is powered by NVIDIA RTX and is a modular development platform of APIs and micro services for creating 3D applications, services and to break down data silos, link teams in real time, and produce physically realistic world-scale simulations with tools like Isaac Sim @nvidia_nvidia_nodate.
+
+#figure(image("images/implementation/omniverse.png", width: 80%), caption: [#text(fill: blue, [Activity diagram how distance measuring and point cloud creating are execute in this implementation.])])
+
 #pagebreak()
 
 = Implementation <implementation>
 The goal of this project is to define an origin within a NeRF scene representation and utilize it for distance measurement and point cloud generation within the scene. To achieve this, the implementation involves several steps, which are detailed in the following chapters.
 
-#figure(image("images/implementation/first_shadow.png", width: 100%), caption: [Activity diagram how distance measuring and point cloud creating are execute in this implementation.])<act_dig1>
+#figure(image("images/implementation/first_shadow.png"), caption: [Activity diagram how distance measuring and point cloud creating are execute in this implementation.])<act_dig1>
 
 The principal process is illustrated in @act_dig1. Once the model has been trained, the Nerfstudio 3D visualization (Viser) with LiDAR environment can be initiated with the CLI command #strong[#emph[ns-view-lidar]] and standard Nerfstudio flags. This action opens the frontend, which allows the user to add and position a frustum within the scene which represent the local origin. Upon clicking the button in the frontend, a Nerfstudio camera object is generated, and a resolution is established in the backend. The specified densities are calculated and then transmitted to the frontend.
 
@@ -363,34 +381,38 @@ For the scene capturing, multiple images from the scene are required. Every impo
 As mentioned in @positioning, intrinsic and extrinsic camera parameters are crucial for this implementation. Colmap is included in Nerfstudio, which then creates the necessary transforms.json file with the parameter for the training by using the CLI command #emph[ns-process]. However, in my tests, the results from Colmap within Nerfstudio were worse than when using Colmap as a standalone program outside of Nerfstudio. In this case, Nerfstudio can also create the transforms.json file using the #emph[ns-process] command but with additional tags and the path to the Colmap sparse data. It is recommended to obtain the camera poses directly without pose estimation. In this scenario, a transforms.json file must be created manually for the training.  
 
 Excerpt from the transforms.json file:
-#pseudocode-list()[
-  + {
-    + "w": image_width,
-    + "h": image_height,
-    + "fl_x": focal_length_x,
-    + "fl_y": focal_length_y,
-    + "cy": principal_point_x,
-    + "cy": principal_point_y,
-    + "k1": radial_distortion_coefficient_1,
-    + "k2": radial_distortion_coefficient_2,
-    + "p1": tangential_distortion_coefficient_1,
-    + "p2": tangential_distortion_coefficient_2,
-    + "camera_model": e.g OPENCV or PINEHOLE
-    + "frames": [
+
+ #figure(
+  align(left,
+    text(size: 10pt,
+    pseudocode-list(booktabs: true)[
       + {
-        + "file_path": "path/to/image_1",
-        + "transform_matrix": [
-          + [r11, r12, r13, px],
-          + [r21, r22, r13, py],
-          + [r11, r12, r13, pz],
-          + [0, 0, 0, 1],
-      + },{
-        + file_path: "path/to/image_2",
-        + ...
-    + }
-  ]
-
-
+        + "w": image_width,
+        + "h": image_height,
+        + "fl_x": focal_length_x,
+        + "fl_y": focal_length_y,
+        + "cy": principal_point_x,
+        + "cy": principal_point_y,
+        + "k1": radial_distortion_coefficient_1,
+        + "k2": radial_distortion_coefficient_2,
+        + "p1": tangential_distortion_coefficient_1,
+        + "p2": tangential_distortion_coefficient_2,
+        + "camera_model": e.g OPENCV or PINEHOLE
+        + "frames": [
+          + {
+            + "file_path": "path/to/image_1",
+            + "transform_matrix": [
+              + [r11, r12, r13, px],
+              + [r21, r22, r13, py],
+              + [r11, r12, r13, pz],
+              + [0, 0, 0, 1],
+          + },{
+            + file_path: "path/to/image_2",
+            + ...
+        + }
+  ],), ),
+  caption: [The transforms.json used from Nerfstudio with intrinsic and extrinsic camera parameter. Nerfstudio allows only one camera for the training.]
+)
 
 == Training
 This implementation focus on using Nerfacto with Nerfstudio. Nerfstudio has multiple types of Nerfacto variant with different memory usage which are needs different time to train the scene. The training can started with images and a transforms.json for camera parameter with the CLI command #emph[ns-train nerfacto-[TYPE] --data YOUR_DATA] in the anaconda shell. The training for the lowest Nerfacto for the scenes needs approximately 15 to 20 minutes depending how many images are used and with the used hardware described earlier. For the nerfacto-big, the second largest model, the time increased to approximately 4 hours to 5 hours. The largest model (nerfacto-huge) needs 7 hours to 9 hours to train the scene.
@@ -564,7 +586,6 @@ The left and middle image are similar to the previous scene. On closer inspectio
 
 A direct comparison from each floor and from different angles. The difference between the gray pattern with and without reflection and the checkerboard with and without interference is not visible in these images.
 
-
 #figure(
    grid(
     columns: 3,
@@ -591,25 +612,12 @@ A LiDAR sensor emits lasers in one direction and calculates the time it takes fo
 A NeRF Scene does not know any obstacle or coordinates. After casting a ray, it estimates the density volume along a ray based on Beer-Lambert-Law, which provides a description of the effects arising resulting from the interaction between light and matter @mayerhofer_bouguerbeerlambert_2020: 
 
 == Single ray <single-ray>
-It is important to understand the functionality of a single ray. Each ray returns a list of density values and their corresponding coordinates. Each value is computed based on the Beer-Lambert method described above. \
+It is important to understand the functionality of a single ray. Each ray returns a list of density values and their corresponding coordinates. Each value is computed on the Beer-Lambert method described above. \
 NeRF can estimate new perspectives by learning a continuous and differentiable function of the scene that allows views from arbitrary angles. It effectively interpolates between the known perspectives using the learned 3D properties of the object. \
 Due to the fact that each ray has infinite points along the ray, a sampling rate is needed (see @volume_sampling). If the estimated density value along the ray does not increase, a sampling point is set on the ray after a certain interval. When the density value increases, indicating that the ray has hit an object, both the density and the sampling rate increase. After the ray passes through the object, the sampling interval becomes larger again, as there is less relevant information behind the obstacle. \
 For testing, a test scene is created with NVIDIA Omniverse. This test scene is built with a $1³$ m pattern to easily estimate distances and a color pattern for the ANN to better recognize the scene. To analyze the behavior of a single ray and its density values, several single rays are simulated in this scene with an exact distance of 1 meter to a wall within the scene.
 
 #figure(image("images/Density_Distance_Algorithm/dda1.png", width: 100%, ), caption: [Sampling points along a ray. Constant sampling rate before collision with the object (A). Higher sampling rate due to the wall (B) and lower sampling rate with increasing distance (C). For better illustration, the sample points are smaller in B and larger in C.])
-
-// === Single Ray Density
-// Since each ray has an unlimited number of points, it is necessary to use a specific sampling rate as described earlier. On the other hand, it is impossible to set the sampling rate so that an exact distance can be measured if the distance is not known. In reality, a tolerance value are set.
-// Therefore, the target is to obtain this sample point which is at closest to an obstacle.
-
-// #table(
-//   columns: 2,
-//   stroke: none,
-//   image("images/Density_Distance_Algorithm/single_ray/ray_id_108.png", width: 120%),
-//   image("images/Density_Distance_Algorithm/single_ray/ray_id_108_range_28.png", width: 120%),
-//   image("images/Density_Distance_Algorithm/single_ray/ray_id_108_range_15.png", width: 120%),
-//   image("images/Density_Distance_Algorithm/single_ray/ray_id_108_range_3.png", width: 120%)
-// )
 
 === Accuracy <accuracy>
 Since each ray has an unlimited number of points, it is necessary to use a specific sampling rate as described earlier. On the other hand, it is impossible to set the sampling rate so that an exact distance can be measured if the distance is not known. In reality, a tolerance value are set.
@@ -618,33 +626,30 @@ Therefore, the target is to obtain this sample point which is at closest to an o
 To test this, several single rays are cast at a distance of 1 meter to the obstacle and the density value closest to 1 meter are plotted. For 11 different locations with different colors where the ray hits the wall, 50 rays are cast. The total average distance of all 550 rays are 1.000014739 meter which is a total deviation from approximately 15μm. The average density value on this exact point are 86.447. An interesting part is the difference between the different densities from the locations:
 <tab:my_table>
 
-
-#set table(
-  stroke: none,
-  gutter: 0.2em,
-  fill: (x, y) =>
-    if x == 0 or y == 0 { gray },
-  inset: (right: 1.5em),
-)
-
-#show table.cell: it => {
-  if it.x == 0 or it.y == 0 {
-    set text(white)
-    strong(it)
-  } else if it.body == [] {
-    // Replace empty cells with 'N/A'
-    pad(..it.inset)[_N/A_]
-  } else {
-    it
+#[
+  #show table.cell: it => {
+    if it.x == 0 or it.y == 0 {
+      if it.body != [Average Density:] {
+        set text(white)
+        strong(it)
+      }
+    } else if it.body == [] {
+      // Replace empty cells with 'N/A'
+      pad(..it.inset)[_N/A_]
+    } else {
+      it
+    }
   }
-}
-
-#align(
-  figure(
-    table(
+  
+  #align(
+    figure(
+      table(
+        gutter: 0.2em,
+        inset: (right: 1.5em),
         columns: 4,
         stroke: none,
-        inset: 6pt,
+        fill: (x, y) =>
+          if x == 0 or y == 0 { gray },
         [#strong[Location]],
         [#strong[Average Distance in m]],
         [#strong[Average Density Value]], 
@@ -660,8 +665,10 @@ To test this, several single rays are cast at a distance of 1 meter to the obsta
         [9], [1.000156424], [102.6740], [#highlight(fill: rgb(255, 174, 122), "0.000156424")], // 0.000156424
         [10], [0.999937118], [96.3068], [0.000062882],// 0.000062882
         [11], [1.000124663], [1.63928], [0.000124663],// 0.000124663
-      ),
-  )) <tab:my_table>
+        ),
+    )) <tab:my_table> 
+]
+
 
 #let width = 55pt
 #let height = 50pt
@@ -698,59 +705,90 @@ To test this, several single rays are cast at a distance of 1 meter to the obsta
   )
 )
 
-It should be mentioned that the color is not directly responsible for the density value but only indirectly. How good the scene, the objects, the spatiality can be recognized for the training, depends among other things on the color as shown in previous sections. Therefore, different colors and pattern leads to different results and density values. It also shows, that the density value is can not choose as an indicator to estimate the closest point at an obstacle what the plots below also shows.
+It should be mentioned that the color is not directly responsible for the density value but only indirectly. How good the scene, the objects, the spatiality can be recognized for the training, depends among other things on the color as shown in previous sections. Therefore, different colors and pattern leads to different results and density values. It also shows, that the density value is can not choose as an indicator to estimate the closest point at an obstacle what the illustrations below also shows.
 
-== Methods
+=== Closest Sample Point
 
-The employment of multiple lasers facilitates the generation of a point cloud representation of the surrounding environment. These sensors are specifically designed for real-time applications. However, the utilization of a NeRF to synthesize data in real-time remains a challenge. The computation of distance between two points within a NeRF scene an generating a point cloud necessitates the completion of several steps.
-#v(2mm) 
-#strong[Determine the points:] This represents a significant challenge with regard to implementation. In other graphical software, such as Unity, NVIDIA Omniverse, and Blender, the coordinates of each edge, vertex, or face are explicitly defined. However, in NeRF, these coordinates are not known. To illustrate this concept in a simplified manner, each scene in NeRF can be conceptualized as a "memory" of the neural network, which learns to generate RGB and density values from a multitude of perspectives and positions by minimizing the discrepancy between the original image and its internal representation. This is referred to as the loss function. This discrepancy in scale and coordinates between the original scene and the NeRF scene presents a challenge. Although this implementation assumed that the local origin in the global scene could be set manually with a visible object within the scene that is movable in runtime, the primary issue lies in determining the appropriate distance between this local origin and each potential obstacle that a ray might encounter. As in @volume_sampling described, the density value increases close to an obstacle. To address this issue, multiple methods are developed and tested to estimate the sample point closest to the obstacle by recognize the increasing density value.
-#v(2mm)
-#strong[Casting rays:] Once the origin within the scene has been established, rays must be cast in order to obtain the requisite distance measurement and point cloud reflection. The rays should be dependent on the local origin and not on the scene perspective, which are typically employed in NeRF for scene representation.
-#v(2mm)
-#strong[Distance measurement:] To measure the distance between two points, the Pythagorean theorem is applied. A key challenge, however, lies in the fact that the scale within the scene does not correspond accurately to that of the original scene, particularly when camera parameters are estimated rather than precisely known during training.
-#v(2mm)
-#figure(image("images/related_work/lidar_vs_nerf.png"), caption: [Simplified illustration depicts the concept of LiDAR and the rationale behind this thesis. While a time-of-flight sensor allows light to pass through and measures the time it takes for light to travel to an obstacle and reflect back to a receiver (illustrated on the left), a NeRF does not actually cast rays within the scene. The challenge is to identify the sample point that is closest to the obstacle and compute the distance between the origin and the sample point, as the coordinates of the origin and the sample point are within the scene.])
+The following illustration different single rays. As in the previous tests, the different from the rays to the virtual wall are 1 meter. The plots shows a section of the whole ray with a red point. This point are the closest sample of the ray to 1 meter. Therefore, this point which would be the best result.
 
-As illustrated in @fig:impicit it is challenging to obtain the requisite coordination to measure the distance between the two points. While the distance can be readily calculated in NVIDIA Omniverse due to the availability of known coordinates, the coordinates in a NeRF scene are dependent on the original images and their associated parameters. It is feasible to approximate the same coordinates as in NVIDIA Omniverse. However, due to the issue of infinite points in space and the lack of knowledge regarding the coordinate of each object within the scene, it is not possible to obtain the exact coordinates, which represents a significant challenge in the implementation of this approach with LiDAR sensors, which are highly precise. Nevertheless, even when it would be feasible to obtain the exact positions, the distance would not be accurate, given that the NeRF scene lacks any references regarding scale. This understanding also depends on the camera parameters. Another Problem is to obtain the closest point on an obstacle. A NeRF approximates the original scene by approximates the RGB and density values. These values are not exact representations of the scene. In the real world or in graphical software, it is possible to use a pen or click on an object because its coordinates are known and defined. However, in a NeRF, every pixel is only an approximation of an RGB value, influenced by the density value depending from images. This means that it is not possible to take a pen and mark a specific point, because the exact position and properties of that point are not explicitly defined in the model. \
+#figure(
+  image("images/Density_Distance_Algorithm/closest_density_point/1_1.png"),
+  caption: [Ray 1 overview. The red point left shows the sample closest to one meter and a high peak because of the obstacle detection from NeRF.]
+) <fig:csp11>
 
-#figure(image("images/introduction/implicite.png", width: 100%), caption: [Comparison between implicit and explicit coordinates in NVIDIA Omniverse and a NeRF scene representation. The use of NVIDIA Omniverse to calculate the distance between two known points in a 3D scene using the Pythagorean theorem (A). The coordinates as user input: $x'_a , y'_a , z'_a$ for the neural network $f_theta$ which interprets these coordinates by computing pixels in the space it learns from training (B). Illustration of te problem of getting a point closest to an obstacle in NeRF (C).#text(fill:blue, [Ich suche immer noch nach einer besseren Darstellung für das rechte Bild. Es wird nicht ganz klar, was das Problem darstellt.])])<fig:impicit>
+#figure(
+  image("images/Density_Distance_Algorithm/closest_density_point/2_1.png"),
+  caption: [Ray 1 closer view. Detailed view of the same ray as in @fig:csp11. The illustration shows, that the high peak is more than 1 meter from the search density point away.]
+)  <fig:csp21>
+#figure(
+  image("images/Density_Distance_Algorithm/closest_density_point/3_1.png"),
+  caption: [Ray 1 more closer view. Density increase before the search sample point.]
+)  <fig:csp31>
+
+As @fig:csp11, @fig:csp21 and @fig:csp31 shows, it is difficulty to estimate the search sample point along the ray which are as closest as possible to an obstacle. The increase of the density, when an object is detected is not at the search sample point. Also shows this example, that the density can increase even before this point.
+
+#figure(
+  image("images/Density_Distance_Algorithm/closest_density_point/examples.png"),
+  caption: [More illustrations for the sample point closest to 1 meter. Vertical axis are the density, horizonal axis are distance in meter. The density peak is more away from the search point. Smaller density increase before the search sample (A). Increasing and decreasing from the density (B). Good example for the density increase (C). It is important to mention, that the graphs are not normalized. The left image are always the whole vertical axis while the right image is only a detailed view of the closest point. Therefore, the hight of the graph should non compared to each other.]
+)
+
+Similar results as in the examples before in all 511 plots. This shows the arbitrariness from the density increase for a recognized obstacle and illustrates the difficulty to obtain the correct sample point along the ray closest to an obstacle. Each ray has his own properties.
+
+== Method
+For distance measuring it is necessary to obtain the sample point closest to the obstacle. As the previous section shows, the property of each ray are individual, which makes it difficult to use a universal method to obtain this sample point.
+The focus for this method lies on the density value which are increased when the virtual ray hits an object within the scene. Multiple methods are tested.
 
 === Not used methods <methods>
-#text(fill:blue, [Alle Abschnitte dieses Kapitels müssen noch einmal überarbeitet und kontrolliert werden. Vor Allem das "In this method" ist sehr nervig.])\
-This section shows the methods for estimating the sample point closest to an obstacle. For this purpose, all rays thrown are analyzed and several methods are tested. The rays themselves are not modified.
+For future researches, this section shows a short representation of this methods which not used in this implementation.
 
-To simulate a NeRF scene, an origin in the scene is required, which can be added as a frustum within the scene. Depending on user input, this frustum simulates a ray within the scene and obtains the density values along a ray.
+#strong[Threshold Method:] If the density value from a sample along the ray exceeds an given threshold value, these sample are used for distance calculation.
 
-The core idea is to estimate the density sample point $sigma$ at the position $x$ closest to the obstacle where the ray intersects, and then calculate the distance between the origin and this estimated point. Several methods are used and tested for this estimation.
+#strong[Different Method:] This method is similar to the first one, but the threshold should not be set by the user. While the first method sets an absolute threshold that is independent of each ray, the focus on increasing each density makes each ray independent of other rays.
 
-==== Threshold method <simple-threshold-method>
-For each ray, I sample the volume densities $sigma(x)$ at discrete points along the ray path. By defining a threshold $sigma_(t h)$, which determines the density above which a relevant interaction is assumed, the algorithm searches for the first position $x_(t h)$ where $sigma(x_(t j)) gt.eq sigma_(t h)$. This corresponding position $x_(t h)$ is then used to determine the distance to the object. \
+#strong[Z-Scored Method:] In this method, the z-score is used to standardize the density values along each ray and identify points where the density deviates significantly from the mean.
 
-While this method is commonly used for testing, it has two problems. First, the use of a threshold itself. Even though the use of a threshold is necessary in any method, it is a goal of this work that the user can use this implementation without defining a threshold because of the second problem: the definition of the threshold. As I mentioned before, the density value closest to the obstacle is arbitrary and different from ray to ray and scene to scene. Even a ray at the same position will give different values. While the test results are good with known distance, it requires the distance to calibrate $sigma_(t h)$, which makes it useless.
+#strong[Standardized Method:] In this method, the volume densities along each ray are standardize to account for global variations.
 
-==== Difference method
-his method focuses on the increases in density along a ray. If $abs(Delta sigma) gt.eq Delta_(t h) $, where $Delta sigma = sigma_i minus sigma_(i-1)$ and $Delta_(t h)$ represents a threshold, then $sigma_i$ corresponding position $x_i$ is used for the distance calculation.
+#strong[Accumulated Method:] In this method, the volume densities accumulate along each ray until the cumulative density reaches or exceeds a predefined threshold 
 
-This method is similar to the first one, but the threshold should not be set by the user. As demonstrated by @single-ray, the density value of the required density closest to the obstacle will vary from ray to ray, even if the origin and direction of the ray are the same. While the first method sets an absolute threshold that is independent of each ray, the focus on increasing each density makes each ray independent of other rays. Since the densities are too different, this method suffers from the same problem as the first method, but with better results and usable without threshold calibration.
+#strong[Maximum Density Change Method:] This method calculates the absolute density changes between successive sample points along each ray.
 
-==== Z-Score method
-In this method, I use the z-score to standardize the density values along each ray and identify points where the density deviates significantly from the mean. For each ray, I calculate the mean $mu$ and the standard deviation $s$ of the density values ${sigma_i}$. The z-score for each density value is calculated as:
-$z_i = (sigma_i - mu) / s$
+#strong[Average Method:] Compared to the previous method, where I identified the point along the ray with the maximum density change between consecutive samples, this method similarly calculates the absolute density differences between consecutive points along each ray.
 
-==== Standardized method
-In this method, I standardize the volume densities along each ray to account for global variations. First, I compute the global mean $μ$ and the global standard deviation $s$ of all volume densities across all rays. For each ray, I standardize the density values $σ_i$ along the ray using $accent(σ, ~)_i=(σ_i -μ)/s$.
 
-Then I defined a threshold $Delta_(t h)$ that determines when a density is considered significant. Search the standardized density values along the ray and identify the first point $x_(i∗)$ at which $accent(σ, ~)_(i∗) gt.eq Δ_(t h)$ holds. This position is used to calculate the distance to the object.
+// This section shows the methods for estimating the sample point closest to an obstacle. For this purpose, all rays thrown are analyzed and several methods are tested. The rays themselves are not modified.
 
-==== Accumulate method
-In this method, the volume densities $σ_i$ accumulate along each ray until the cumulative density reaches or exceeds a predefined threshold $Sigma_(t h)$. For each sample point $x_i$ along the ray, the cumulative density $S_i =Sigma_(k=1)^i σ_k$ is calculated. The first point $x_(i∗)$ where $S_i gt.eq Sigma_(t h)$ is found. This position is used to calculate the distance to the object.
+// To simulate a NeRF scene, an origin in the scene is required, which can be added as a frustum within the scene. Depending on user input, this frustum simulates a ray within the scene and obtains the density values along a ray.
 
-=== Maximum density change
-This method calculates the absolute density changes between successive sample points along each ray. Let $σ_i$ be the volume density at point $x_i$. The density change between points $x_(i-1)$ and $x_i$ is calculated as $Delta_(sigma_i) = abs(sigma_i -sigma_i -1)$. The index $i^∗$ at which the density change $Delta_(sigma_i)$ is maximized is determined: $i^∗ = arg max Delta_(σ_i)$. The corresponding position $x_(i^∗)$ is assumed to be the position where the ray hits the object, and the distance is calculated.
+// The core idea is to estimate the density sample point $sigma$ at the position $x$ closest to the obstacle where the ray intersects, and then calculate the distance between the origin and this estimated point. Several methods are used and tested for this estimation.
 
-==== Average density change
-Compared to the previous method, where I identified the point along the ray with the maximum density change between consecutive samples, this method similarly calculates the absolute density differences between consecutive points along each ray. However, instead of relying solely on the maximum density change, I calculate the average density difference $accent(Delta_sigma, -)$ over the entire ray. I then define a dynamic threshold $Delta_(t h) = k * accent(Delta_sigma, -)$, where $k$ is a scaling factor.
+// ==== Threshold method <simple-threshold-method>
+// For each ray, I sample the volume densities $sigma(x)$ at discrete points along the ray path. By defining a threshold $sigma_(t h)$, which determines the density above which a relevant interaction is assumed, the algorithm searches for the first position $x_(t h)$ where $sigma(x_(t j)) gt.eq sigma_(t h)$. This corresponding position $x_(t h)$ is then used to determine the distance to the object. \
+
+// While this method is commonly used for testing, it has two problems. First, the use of a threshold itself. Even though the use of a threshold is necessary in any method, it is a goal of this work that the user can use this implementation without defining a threshold because of the second problem: the definition of the threshold. As I mentioned before, the density value closest to the obstacle is arbitrary and different from ray to ray and scene to scene. Even a ray at the same position will give different values. While the test results are good with known distance, it requires the distance to calibrate $sigma_(t h)$, which makes it useless.
+
+// ==== Difference method
+// his method focuses on the increases in density along a ray. If $abs(Delta sigma) gt.eq Delta_(t h) $, where $Delta sigma = sigma_i minus sigma_(i-1)$ and $Delta_(t h)$ represents a threshold, then $sigma_i$ corresponding position $x_i$ is used for the distance calculation.
+
+// This method is similar to the first one, but the threshold should not be set by the user. As demonstrated by @single-ray, the density value of the required density closest to the obstacle will vary from ray to ray, even if the origin and direction of the ray are the same. While the first method sets an absolute threshold that is independent of each ray, the focus on increasing each density makes each ray independent of other rays. Since the densities are too different, this method suffers from the same problem as the first method, but with better results and usable without threshold calibration.
+
+// ==== Z-Score method
+// In this method, I use the z-score to standardize the density values along each ray and identify points where the density deviates significantly from the mean. For each ray, I calculate the mean $mu$ and the standard deviation $s$ of the density values ${sigma_i}$. The z-score for each density value is calculated as:
+// $z_i = (sigma_i - mu) / s$
+
+// ==== Standardized method
+// In this method, I standardize the volume densities along each ray to account for global variations. First, I compute the global mean $μ$ and the global standard deviation $s$ of all volume densities across all rays. For each ray, I standardize the density values $σ_i$ along the ray using $accent(σ, ~)_i=(σ_i -μ)/s$.
+
+// Then I defined a threshold $Delta_(t h)$ that determines when a density is considered significant. Search the standardized density values along the ray and identify the first point $x_(i∗)$ at which $accent(σ, ~)_(i∗) gt.eq Δ_(t h)$ holds. This position is used to calculate the distance to the object.
+
+// ==== Accumulate method
+// In this method, the volume densities $σ_i$ accumulate along each ray until the cumulative density reaches or exceeds a predefined threshold $Sigma_(t h)$. For each sample point $x_i$ along the ray, the cumulative density $S_i =Sigma_(k=1)^i σ_k$ is calculated. The first point $x_(i∗)$ where $S_i gt.eq Sigma_(t h)$ is found. This position is used to calculate the distance to the object.
+
+// === Maximum density change
+// This method calculates the absolute density changes between successive sample points along each ray. Let $σ_i$ be the volume density at point $x_i$. The density change between points $x_(i-1)$ and $x_i$ is calculated as $Delta_(sigma_i) = abs(sigma_i -sigma_i -1)$. The index $i^∗$ at which the density change $Delta_(sigma_i)$ is maximized is determined: $i^∗ = arg max Delta_(σ_i)$. The corresponding position $x_(i^∗)$ is assumed to be the position where the ray hits the object, and the distance is calculated.
+
+// ==== Average density change
+// Compared to the previous method, where I identified the point along the ray with the maximum density change between consecutive samples, this method similarly calculates the absolute density differences between consecutive points along each ray. However, instead of relying solely on the maximum density change, I calculate the average density difference $accent(Delta_sigma, -)$ over the entire ray. I then define a dynamic threshold $Delta_(t h) = k * accent(Delta_sigma, -)$, where $k$ is a scaling factor.
 
 === Used method
 Once the frustum has been positioned with respect to the origin and direction, the vertical and horizontal angular resolution has been obtained, and the button has been pressed to generate the point cloud within the scene, a Nerfstudio camera object will be created. Furthermore, all densities and locations along each ray will be saved in a list.
@@ -762,141 +800,150 @@ Since the ray is scanned at discrete points, the integral can be approximated by
 - $Delta_(s_i)$ is the distance between point $i-1$ and $i$ \
 - $T_o = 1$ the initial transmittance \
 
-A collision is detected when transmittance $T_n$ falls below the threshold: $T_n gt.small T_(t h)$, where $T_(t h) = 10^(-200)$.
+A collision is detected when transmittance $T_n$ falls below the threshold: $T_n gt.small T_(t h)$, where $T_(t h) = 10^(-200)$. A low threshold ensures that even the smallest density changes and faintly visible details are detected.
 
-#pseudocode-list()[
+The integration as pseudocode:
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+pseudocode-list(booktabs: true)[
   + *Function* find_collision_with_transmittance(ray_locations, ray_densities, threshold):
-    + Set total_distance to 0
-    + Set transmittance to 1.0  // Initial transmittance value
-    + origin = ray_locations[0]
+    + Set transmittance to 1.0  #text(fill: rgb("#555"), [/\/ Initial transmittance value ])
+    + origin = frustum_origin
 
     + *For* each location, density in ray_locations[1:], ray_densities[1:]:
-      + calculate distance between origin and current location
-      + add this distance to total_distance
-
-      + calculate delta_transmittance as exp(-density \* distance)
+      + Set and calculate distance between origin and current location
+      + Set and calculate delta_transmittance as exp(-density \* distance)
       + update transmittance by multiplying with delta_transmittance
-
       + *If* transmittance < threshold:
-        + Return: total_distance, current location, current density  // Collision found
+        + Return: distance, location, density #text(fill: rgb("#555"), [/\/ Collision found])
       + *End If*
     + *End For*
-    + Return: No collision found  // If no collision is detected
+    + Return: No collision found  #text(fill: rgb("#555"), [/\/ If no collision is detected])
   + *End*
-  ]
-
+  ], caption: [The function simulates the passage of a ray through a medium that has different densities at different points. It calculates the transmittance (permeability) along the ray and determines whether the cumulative transmittance falls below a certain threshold value. If this is the case, it is assumed that a "collision" has taken place (i.e. the ray has been significantly attenuated).]
+)
 #pagebreak()
 
 = Results
-In this chapter I will present some test with my test scene and a real scene with a refence object. It was not possible to test it with a real LiDAR.
-
-== Test scene
-To gain a more comprehensive understanding of this implementation, a trial was conducted in a test environment. The test scene was trained with known extrinsic and intrinsic parameters and with interference patterns for enhanced recognition due to the training. Given the known position, a distance of one meter in the original NVIDIA Omniverse scene is equivalent to one meter in the test scene. This facilitates the measurement of distance and composition with the original scene.
-
-In order to test the hypothesis, 2560 rays were cast onto different surfaces at varying distances. At each position, 10 rays were cast, and the distance was increased by 0.5 meters up to a maximum of 4.5 meters, which represents the border of the scene. Thereafter, the position was changed to another surface.
 
 #figure(
+  grid(
+    gutter: 2pt,
+    image("images/results/result1.png"), 
+    image("images/results/result2.png"), 
+    image("images/results/result3.png", width: 70%), 
+  ),
+  caption: [Point cloud generating, plot and distance measuring within different NeRF scenes. Pose estimation with marker (A), pose estimation with colmap (B) and knowing camera position with a virtual environment (C)]
+)
+In this chapter I will present some test with a test scene and a real scene with a refence object. It was not possible to test it with a real LiDAR.
+== Test Scene
+#figure(
+  image("images/results/test_scene.png"), caption: [Images from the the test scene. Left image: Camera pose for the training of this test scene. Middle: The test scene as NeRF in Nerfstudio. Right: Point cloud within the test scene. The floor was good recognized by the ANN.]
+)
+
+To gain a more comprehensive understanding of this implementation, a trial was conducted in a test environment. The test scene was trained with known extrinsic and intrinsic parameters and with interference patterns for enhanced recognition due to the training. Given the known position, a distance of one meter in the original NVIDIA Omniverse scene is equivalent to one meter in the test scene. This facilitates the measurement of distance and composition with the original scene.
+
+== Test
+In order to test the hypothesis, 2560 rays were cast onto different surfaces at varying distances. At each position, 10 rays were cast, and the distance was increased by 0.5 meters up to a maximum of 4.5 meters, which represents the border of the scene. Thereafter, the position was changed to another surface.
+
+#align(
+  center,
   table(
       columns: 2,
       stroke: none,
       align: start,
       [Average Deviation:], [0.0001116 m],
       [Average Density:], [233.069]
-  ),
-)
-
-#align(center,
-  table(
-    columns: 3,
-    align: center,
-    gutter: 5pt,
-    [], [Average Deviation with:], [Average Density with:], 
-         [1 meter],[-0.00074724], [245.23731445],
-         [1.5 meter],[-0.00193337], [168.95489944],
-         [2 meter],[-0.00030199], [156.13135481],
-         [2.5 meter],[0.00103657], [130.91514499],
-         [3 meter],[0.00167161], [141.78231862],
-         [3.5 meter],[0.00099374], [180.60095075],
-         [4 meter],[0.00077826], [277.47396092],
-         [4.5 meter],[-0.00060454], [563.45454628],
   )
 )
+
+#[
+  #show table.cell: it => {
+    if it.x == 0 or it.y == 0 {
+      set text(white)
+      strong(it)
+    } else if it.body == [] {
+      // Replace empty cells with 'N/A'
+      pad(..it.inset)[_N/A_]
+    } else {
+      it
+    }
+  }
+
+  #align(center,
+    table(
+      gutter: 0.2em,
+        inset: (right: 1.5em),
+        stroke: none,
+        fill: (x, y) =>
+          if x == 0 or y == 0 { gray },
+      columns: 3,
+      align: center,
+      
+      [], [Average Deviation with:], [Average Density with:], 
+           [1 meter],[-0.00074724], [245.23731445],
+           [1.5 meter],[-0.00193337], [168.95489944],
+           [2 meter],[-0.00030199], [156.13135481],
+           [2.5 meter],[0.00103657], [130.91514499],
+           [3 meter],[0.00167161], [141.78231862],
+           [3.5 meter],[0.00099374], [180.60095075],
+           [4 meter],[0.00077826], [277.47396092],
+           [4.5 meter],[-0.00060454], [563.45454628],
+    )
+  )
+]
+
+The table illustrates the small deviations observed in the test, which evaluates the accuracy of distance measurements within the scene. The following graphs depict the average deviation of all samples in this test. The vertical axis represents the deviation of each ray from the expected distance, independent of the actual distance to the wall. The horizontal axis corresponds to the individual rays. In an ideal scenario, the graph would be a horizontal line at zero, analogous to the mathematical function $f(x)=0$, representing no deviation.
+
 #figure(
-  image("images/results/average_re.png", ), caption: [Average distance from all samples]
-)
-#align(
+  image("images/results/average_re.png", ), caption: [Average distance from all 2560 samples. The horizontal axis represents the samples, while the vertical axis indicates the distance. Each point represents a distance measurement, as explained below.]
+) <fig:result_all>
+
+#figure(
    grid(
     columns: 2,
-    row-gutter: 3mm,
-    column-gutter: 3mm,
+    row-gutter: 2mm,
+    column-gutter: 2mm,
     align: bottom,
-    image("images/results/1_fin.png"), image("images/results/1_5_fin.png"),
-    [1 meter], [1.5 meter]
-  )
-)
-#align(
-   grid(
-    columns: 2,
-    row-gutter: 3mm,
-    column-gutter: 3mm,
-    align: bottom,
-    image("images/results/2_fin.png"), image("images/results/2_5_fin.png"),
-    [2 meter], [2.5 meter]
-  )
-)
-#align(
-   grid(
-    columns: 2,
-    row-gutter: 3mm,
-    column-gutter: 3mm,
-    align: bottom,
-    image("images/results/3_fin.png"), image("images/results/3_5_fin.png"),
-    [3 meter], [3.5 meter]
-  )
-)
-#align(
-   grid(
-    columns: 2,
-    row-gutter: 3mm,
-    column-gutter: 3mm,
-    align: bottom,
-    image("images/results/4_fin.png"), image("images/results/4_5_fin.png"),
-    [4 meter], [4.5 meter]
-  )
-)
+    image("images/results/1.png"), image("images/results/1.5.png"),
+    image("images/results/2.png"), image("images/results/2.5.png"),
+    image("images/results/3.png"), image("images/results/3.5.png"),
+    image("images/results/4.png"), image("images/results/4.5.png"),
+  ), caption: [This Figure shows eight graphs for the test described below. Each graph has different distance to the wall. Except some high peaks (in 1.5m and 4.5m) the graphs are similar to each other, if we assume, that every ray cast leads to a different result. It also shows a good average overall and confirms, that a higher distance to an object has no different values]
+) <fig:result>
 
-== Real scene
-#text(fill: blue, [Hier würde ich gerne noch Tests in einer realen Szene machen, da ich aber keine reale Umgebung habe, mit der ich Kamerapositionen genau bestimmen kann, könnte dies auch wegfallen.])
-
-== Advantages and Limitations
-LiDAR sensors are not perfect. Distance measurements from LiDAR sensors can have deviations from real distances. Up to 20 cm at high angles of incidence @laconte_lidar_2019. Poorly reflecting or highly absorbing materials can affect the backscatter of the laser ray, resulting in inaccurate measurements. One study shows that the range of LiDAR sensors can be reduced by up to 33% under these conditions @loetscher_assessing_2023. Other influencing factors are complex terrain, complexity, measurement height, surface roughness and forest, atmospheric stability and half cone opening angle @klaas-witt_five_2022. An average deviation of 0.1116 mm is a better result than expected at the beginning of this thesis, even in a test environment. Unlike a LiDAR sensor, a NeRF does not need real rays to measure distance within the scene. This makes it possible to measure the distance between two points in the scene, even if there are some obstacles between them, as long as those points are known. To use a NeRF for 3D scene representation, it is easier to reconstruct the scene. 
-#v(3mm)
-The main limitation of this application is, that it can not used in realtime, which is a big benefit for real sensors. In view of the fact that a neural network has to be trained for a NeRF, it is doubtful that this will be achieved in the next few years, even with better hardware and technology. The second limitation is that factors of a LiDAR sensor are not implemented due to the limited time of this thesis. A LiDAR sensor has many influences on the result, as is showable in this work. Distance measurements are only taken when an emitted LiDAR ray reflects off an object and returns to the sensor. Cases where ray do not return are called ray drop @mcdermott_probabilistic_2024. This ray drop needs physical correct calculation.
-
-...
-
-#text(fill: blue, [Das Kapitell ist noch nicht fertig geschrieben. Alles unterhalb ist nicht relevant für euch.])
+While @fig:result_all shows all samples from the test described below, @fig:result illustrates the test from each distance to the wall. Except some outlines, the results are in average good and are independent from the distance to the obstacle. This test confirms that at least in the test scene distance measuring and point cloud generation similar to an simulated LiDAR are possible and in some cases computes better values in distance measuring than real LiDAR sensors.
 #pagebreak()
 
-= Conclusion <conclusion>
+= Discussion <discussion>
+The primary question of this thesis is whether it is possible to synthesize LiDAR sensors within a Neural Radiance Field (NeRF) to determine the most suitable type of LiDAR for specific applications in a potential environment. Due to the complexity of the real world, accurately simulating a real LiDAR sensor is challenging. Similarly, understanding spatial relationships in 2D images for 3D scenes remains a significant hurdle. This implementation can generate point clouds and measure distances within a NeRF scene, but it is subject to certain restrictions and limitations.
 
-#pagebreak()
+As demonstrated, the complexity begins with creating the scene itself. The coordinates and scales within a NeRF are not equivalent to those in the original scene when pose estimation is employed. Even when a reference object is used, as implemented here, high-precision measurements are limited if intrinsic and extrinsic camera parameters are unavailable or cannot be computed. These restrictions depend on the specific use case and the quality of the NeRF model.
 
-= Outlook <discussion>
-In this chapter I will propose further research about this study.
+The second issue lies in scene recognition. While perspective views generally yield good results for NeRF scene generation, the lack of spatial knowledge remains a critical challenge. Homogeneous colors present an obvious issue; however, even in scenes with good differentiation, spatial inconsistencies can arise, leading to poor results.
 
-== Psyhsical Propeties
+By using or calculating camera parameters, distance measurements can be precise if the NeRF is focused on the area of interest, the scene is well-recognized, and the quality of the NeRF is high. This applies both to distance measurements and to point cloud generation within the scene.
+
+LiDAR sensors themselves are not perfect. Distance measurements from LiDAR sensors can have deviations from real distances. Up to 20 cm at high angles of incidence @laconte_lidar_2019. Poorly reflecting or highly absorbing materials can affect the backscatter of the ray, resulting in inaccurate measurements. One study shows that the range of LiDAR sensors can be reduced by up to 33% under these conditions @loetscher_assessing_2023. Other influencing factors are complex terrain, measurement height, surface roughness and forest, atmospheric stability and half cone opening angle @klaas-witt_five_2022. These physical properties also a negative factor when trying to simulate a real LiDAR sensor. LiDAR sensors has many influences on the result, as is showable in this work. Distance measurements are only taken when an emitted LiDAR ray reflects off an object and returns to the sensor. Cases where ray do not return are called ray drop @mcdermott_probabilistic_2024. This ray drop needs physical correct calculation. As mentioned in @lidar-simulation, physical computation of LiDAR sensors are difficulty due the complexity of the real word. Factors such as scene brightness also play an important role.
+
+Through the use of a NeRF with an ANN, some of these LiDAR-specific issues are mitigated in this implementation. However, for high-precision measurements and complex or large scenes, this implementation cannot fully simulate the behavior of real rays. For applications in industrial settings, where the selection of a suitable LiDAR sensor is needed for relatively simple scenes, this implementation offers a safe, cost-effective, and practical alternative.
+
+== Outlook
+
+=== Psyhsical Propeties
 As mentiont, LiDAR results depends on physical properties. While it es difficult to simulate such properties it would be interesting if such computation can done with one ore multiple neural networks implemented in NeRF.
 
-== Medium of Velocity of Light
+=== Medium of Velocity of Light
 The normal use case of an LiDAR-Sensor are in Air where the different between the medium through what the light has pass through are similar to vacuum. The benefit of this applications is, that real rays are not needed ans so on, it can also be used for other mediums, like water or glass.
 
-== Gaussian splat
+=== Gaussian splat
 After 
 
 #pagebreak()
 
-= Discussion <discussion>
+= Conclusion <conclusion>
+#pagebreak()
 #pagebreak()
 
 = Use of AI in this thesis <use-of-ai-in-this-thesis>
